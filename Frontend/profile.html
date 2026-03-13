@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Profile | CuriosityOS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/pocketbase/dist/pocketbase.umd.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#020617] text-white min-h-screen antialiased">
+    <nav class="p-6 max-w-7xl mx-auto flex justify-between items-center">
+        <div class="flex items-center gap-4 cursor-pointer" onclick="window.location.href='index.html'">
+            <img src="https://i.ibb.co.com/pj0XT02b/image.png" class="w-10 h-10">
+            <span class="font-bold text-xl">CuriosityOS</span>
+        </div>
+        <a href="community.html" class="text-sm text-gray-400 hover:text-white transition-colors">BACK TO COMMUNITY</a>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-6 py-12" id="profile-content">
+        <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-cyan-400"></div></div>
+    </main>
+
+    <script>
+        const pb = new PocketBase('http://127.0.0.1:8090');
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('id');
+
+        async function loadProfile() {
+            const container = document.getElementById('profile-content');
+            try {
+                // Fetch latest data from PocketBase
+                const user = await pb.collection('users').getOne(userId);
+                
+                container.innerHTML = `
+                    <div class="bg-slate-900/50 border border-white/5 rounded-[2.5rem] p-8 md:p-12 backdrop-blur-xl">
+                        <div class="flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left mb-12">
+                            <img src="${user.avatar ? pb.files.getUrl(user, user.avatar) : 'https://ui-avatars.com/api/?name='+user.name}" 
+                                 class="w-32 h-32 rounded-3xl object-cover border-2 border-cyan-400/30">
+                            <div class="flex-1">
+                                <h1 class="text-4xl font-bold mb-2">${user.name}</h1>
+                                <p class="text-cyan-400 font-bold uppercase tracking-widest text-sm mb-4">${user.role || 'Member'}</p>
+                                <p class="text-gray-400 text-lg italic italic leading-relaxed">"${user.tagline || 'Pioneer of the digital frontier.'}"</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <div class="space-y-6">
+                                <h3 class="text-xl font-bold border-b border-white/10 pb-2">Information</h3>
+                                <div class="space-y-4 text-sm">
+                                    <div class="flex justify-between"><span class="text-gray-500">Username</span><span>@${user.username}</span></div>
+                                    <div class="flex justify-between"><span class="text-gray-500">Email</span><span>${user.email}</span></div>
+                                    <div class="flex justify-between"><span class="text-gray-500">Institution</span><span>${user.institution || 'CuriosityOS Foundation'}</span></div>
+                                    <div class="flex justify-between"><span class="text-gray-500">Contact</span><span>${user.contact || 'Private'}</span></div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-6">
+                                <h3 class="text-xl font-bold border-b border-white/10 pb-2">Connect</h3>
+                                <div class="flex flex-wrap gap-4">
+                                    ${renderSocial('facebook', user.facebook)}
+                                    ${renderSocial('linkedin', user.linkedin)}
+                                    ${renderSocial('github', user.github)}
+                                    ${renderSocial('instagram', user.instagram)}
+                                </div>
+                                <div class="mt-8">
+                                    <h4 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Bio</h4>
+                                    <p class="text-gray-400 leading-relaxed">${user.bio || 'This member is focused on cognitive growth and structured digital learning.'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
+            } catch (err) {
+                container.innerHTML = `<div class="text-center text-red-400">Profile not found or connection error.</div>`;
+            }
+        }
+
+        function renderSocial(icon, link) {
+            if (!link) return '';
+            return `<a href="${link}" target="_blank" class="p-3 bg-white/5 hover:bg-cyan-400/20 rounded-xl transition-all"><i data-lucide="${icon}" class="w-5 h-5"></i></a>`;
+        }
+
+        loadProfile();
+    </script>
+</body>
+</html>

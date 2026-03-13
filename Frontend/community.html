@@ -3,120 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CuriosityOS | Community</title>
-    
+    <title>Community | CuriosityOS</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/pocketbase/dist/pocketbase.umd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        cyanGlow: '#22d3ee',
-                        scienceBlue: '#020617',
-                    }
-                }
-            }
-        }
-    </script>
-
     <style>
-        body { background-color: #020617; color: white; overflow-x: hidden; }
-        .glass-card { 
-            background: rgba(15, 23, 42, 0.4); 
-            border: 1px solid rgba(255, 255, 255, 0.05); 
-            backdrop-filter: blur(12px);
-        }
-        .profile-border {
-            position: relative;
-            padding: 2px;
-            background: linear-gradient(to bottom right, #22d3ee, transparent);
-            border-radius: 1rem;
-        }
+        body { background-color: #020617; color: white; font-family: 'Inter', sans-serif; }
+        .glass-card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .filter-btn.active { background: #22d3ee; color: #020617; box-shadow: 0 0 20px rgba(34, 211, 238, 0.4); }
     </style>
 </head>
-<body class="antialiased selection:bg-cyanGlow selection:text-scienceBlue">
+<body class="antialiased">
 
-    <nav class="p-6 max-w-7xl mx-auto flex justify-between items-center">
-        <div class="flex items-center gap-2 text-cyanGlow font-bold text-xl tracking-tight">
-            <i data-lucide="atom"></i> CuriosityOS
+    <nav class="p-6 max-w-7xl mx-auto flex justify-between items-center relative z-50">
+        <div class="flex items-center gap-4 cursor-pointer" onclick="window.location.href='index.html'">
+            <img src="https://i.ibb.co.com/pj0XT02b/image.png" alt="Logo" class="w-12 h-12 object-contain">
+            <span class="text-white font-bold text-xl tracking-tight">CuriosityOS</span>
         </div>
         <a href="index.html" class="text-sm font-medium text-gray-400 hover:text-white transition-colors">BACK TO HOME</a>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-6 py-20">
-        <div class="max-w-3xl mb-16">
-            <h1 class="text-5xl font-bold mb-6 tracking-tight leading-tight" id="title">
-                The minds behind <span class="text-cyanGlow">CuriosityOS</span>
-            </h1>
-            <p class="text-xl text-gray-400 leading-relaxed" id="subtitle">
-                Meet the founders and developers dedicated to transforming passive digital consumption into structured, cognitive growth.
-            </p>
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <div class="text-center mb-16">
+            <h1 class="text-5xl font-bold mb-4">Our <span class="text-cyanGlow">Community</span></h1>
+            <p class="text-gray-400 max-w-2xl mx-auto">Meet the researchers, developers and contributors driving CuriosityOS forward.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-            
-            <div class="profile-border opacity-0 member-card">
-                <div class="glass-card p-8 rounded-[0.9rem] h-full">
-                    <div class="flex items-start justify-between mb-6">
-                        <div class="bg-cyanGlow/10 p-4 rounded-xl">
-                            <i data-lucide="shield-check" class="text-cyanGlow w-8 h-8"></i>
-                        </div>
-                        <span class="text-[10px] font-bold text-cyanGlow tracking-[0.2em] uppercase">Founder & CEO</span>
-                    </div>
-                    <h2 class="text-3xl font-bold mb-2">Prosun Datta</h2>
-                    <p class="text-cyanGlow font-medium mb-4">Lead Developer & Field Manager</p>
-                    <p class="text-gray-400 leading-relaxed mb-6">
-                        Architect of CuriosityOS and visionary behind this platform. Focused on building systems that reward curiosity and deep technical skill.
-                    </p>
-                    <div class="flex gap-4">
-                        <i data-lucide="github" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer transition-colors"></i>
-                        <i data-lucide="linkedin" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer transition-colors"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="profile-border opacity-0 member-card">
-                <div class="glass-card p-8 rounded-[0.9rem] h-full">
-                    <div class="flex items-start justify-between mb-6">
-                        <div class="bg-purple-500/10 p-4 rounded-xl">
-                            <i data-lucide="terminal" class="text-purple-400 w-8 h-8"></i>
-                        </div>
-                        <span class="text-[10px] font-bold text-purple-400 tracking-[0.2em] uppercase">Co-Founder</span>
-                    </div>
-                    <h2 class="text-3xl font-bold mb-2">Dipto Singha</h2>
-                    <p class="text-purple-400 font-medium mb-4">Operations Manager & Junior Developer</p>
-                    <p class="text-gray-400 leading-relaxed mb-6">
-                        Driving the operational excellence and strategic deployment of educational frameworks across the CuriosityOS ecosystem.
-                    </p>
-                    <div class="flex gap-4">
-                        <i data-lucide="twitter" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer transition-colors"></i>
-                        <i data-lucide="mail" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer transition-colors"></i>
-                    </div>
-                </div>
-            </div>
-
+        <div class="flex flex-wrap justify-center gap-4 mb-12">
+            <button onclick="filterCommunity('founding')" id="btn-founding" class="filter-btn active px-8 py-3 rounded-full border border-white/10 font-bold transition-all">Founding Members</button>
+            <button onclick="filterCommunity('board')" id="btn-board" class="filter-btn px-8 py-3 rounded-full border border-white/10 font-bold text-gray-400 hover:text-white transition-all">Board Members</button>
+            <button onclick="filterCommunity('members')" id="btn-members" class="filter-btn px-8 py-3 rounded-full border border-white/10 font-bold text-gray-400 hover:text-white transition-all">Members</button>
         </div>
+
+        <div id="members-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
     </main>
 
     <script>
-        // Initialize Icons
-        lucide.createIcons();
+        const pb = new PocketBase('http://127.0.0.1:8090');
 
-        // GSAP Entrance Animations
-        const tl = gsap.timeline();
+        // Static Data for Founding & Board
+        const staticMembers = {
+            founding: [
+                { name: "Prosun Datta", role: "Founder & CEO", avatar: "https://i.ibb.co.com/pj0XT02b/image.png", bio: "Leading the vision of CuriosityOS." },
+                { name: "Dipto Singha", role: "Co-Founder & Operations", avatar: "https://i.ibb.co.com/pj0XT02b/image.png", bio: "Managing global operations and strategy." }
+            ],
+            board: [
+                { name: "Board Seat Alpha", role: "Strategic Advisor", avatar: "", bio: "Advising on institutional research growth." }
+            ]
+        };
 
-        tl.from("#title", { y: 30, opacity: 0, duration: 0.8, ease: "power3.out" })
-          .from("#subtitle", { y: 20, opacity: 0, duration: 0.8, ease: "power3.out" }, "-=0.6")
-          .to(".member-card", { 
-              opacity: 1, 
-              y: 0, 
-              stagger: 0.2, 
-              duration: 1, 
-              ease: "expo.out" 
-          }, "-=0.4");
+        async function filterCommunity(tier) {
+            // Update UI Buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active', 'text-white');
+                btn.classList.add('text-gray-400');
+            });
+            document.getElementById(`btn-${tier}`).classList.add('active', 'text-scienceBlue');
+
+            const grid = document.getElementById('members-grid');
+            
+            // Animation Out
+            await gsap.to(grid, { opacity: 0, y: 20, duration: 0.2 });
+            grid.innerHTML = "";
+
+            let people = [];
+
+            if (tier === 'members') {
+                try {
+                    // Fetch only 'authorized' users from PocketBase
+                    const records = await pb.collection('users').getFullList({
+                        filter: 'authorized = true', // Ensure you add an 'authorized' bool field in PB
+                        sort: '-created',
+                    });
+                    people = records.map(r => ({
+                        name: r.name,
+                        role: r.class || "Member",
+                        avatar: r.avatar ? pb.files.getUrl(r, r.avatar) : "https://ui-avatars.com/api/?name=" + r.name,
+                        bio: r.institution || "Member of CuriosityOS"
+                    }));
+                } catch (e) { console.error("PB Fetch Error:", e); }
+            } else {
+                people = staticMembers[tier];
+            }
+
+            // Render Cards
+            people.forEach(p => {
+                const card = `
+                    <div class="glass-card p-6 rounded-3xl border border-white/5 hover:border-cyanGlow/30 transition-all group">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-cyanGlow/20">
+                                <img src="${p.avatar || 'https://ui-avatars.com/api/?name='+p.name}" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white group-hover:text-cyanGlow transition-colors">${p.name}</h3>
+                                <p class="text-xs text-cyanGlow uppercase tracking-widest font-bold">${p.role}</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm leading-relaxed">${p.bio}</p>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+
+            // Animation In
+            gsap.to(grid, { opacity: 1, y: 0, duration: 0.4 });
+        }
+
+        // Initialize with Founding Members
+        filterCommunity('founding');
     </script>
 </body>
 </html>
