@@ -48,11 +48,11 @@
         <div class="flex flex-wrap justify-center gap-4 mb-12">
             <button onclick="filterCommunity('founding')" id="btn-founding" class="filter-btn active px-8 py-3 rounded-full border border-white/10 font-bold transition-all">Founding Members</button>
             <button onclick="filterCommunity('board')" id="btn-board" class="filter-btn px-8 py-3 rounded-full border border-white/10 font-bold text-gray-400 hover:text-white transition-all">Board Members</button>
-            <button onclick="filterCommunity('general')" id="btn-general" class="filter-btn px-8 py-3 rounded-full border border-white/10 font-bold text-gray-400 hover:text-white transition-all">General Members</button>
+            <button onclick="filterCommunity('')" id="btn-" class="filter-btn px-8 py-3 rounded-full border border-white/10 font-bold text-gray-400 hover:text-white transition-all">General Members</button>
         </div>
 
         <div id="members-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            </div>
+        </div>
     </main>
 
     <script>
@@ -75,19 +75,33 @@
             grid.innerHTML = "";
 
             try {
-                // 3. Dynamic Fetch: Authorized = true AND tier matches button
-                const records = await pb.collection('users').getFullList({
-                    filter: `authorized = true && tier = "${tier}"`, 
-                    sort: '-created',
-                });
+                // 3. Dynamic Fetch Logic
+                let fetchOptions = { sort: '-created' };
                 
-                if (records.length === 0) {
-                    grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-600 font-medium">No authorized ${tier}s found.</div>`;
+                // If checking Founding or Board, enforce authorization and specific tier
+                if (tier === 'founding' || tier === 'board') {
+                    fetchOptions.filter = `authorized = true && tier = "${tier}"`;
+                } 
+                // If checking General Members, remove authorization check
+                else {
+                    fetchOptions.filter = `tier = ""`; 
                 }
 
-                // 4. Render Member Cards
+                const records = await pb.collection('users').getFullList(fetchOptions);
+                
+                if (records.length === 0) {
+                    const displayTier = tier === '' ? 'general member' : tier;
+                    grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-600 font-medium">No ${displayTier}s found.</div>`;
+                }
+
+                // 4. Render Member Cards with Fallbacks
+                let htmlContent = '';
                 records.forEach(r => {
-                    const avatarUrl = r.avatar ? pb.files.getUrl(r, r.avatar) : `https://ui-avatars.com/api/?name=${encodeURIComponent(r.name)}&background=22d3ee&color=020617`;
+                    // Smart fallbacks in case a new user hasn't set up their profile yet
+                    const displayName = r.name || "Curious Explorer";
+                    const displayRole = r.role || (tier === '' ? 'General Member' : 'Member');
+                    const displayBio = r.bio || 'Contributing to the CuriosityOS mission.';
+                    const avatarUrl = r.avatar ? pb.files.getUrl(r, r.avatar) : `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=22d3ee&color=020617`;
                     
                     const card = `
                         <div onclick="window.location.href='profile.html?id=${r.id}'" 
@@ -97,15 +111,17 @@
                                     <img src="${avatarUrl}" class="w-full h-full object-cover">
                                 </div>
                                 <div>
-                                    <h3 class="font-bold text-white group-hover:text-cyanGlow transition-colors">${r.name}</h3>
-                                    <p class="text-xs text-cyanGlow uppercase tracking-widest font-bold">${r.role || 'Member'}</p>
+                                    <h3 class="font-bold text-white group-hover:text-cyanGlow transition-colors">${displayName}</h3>
+                                    <p class="text-xs text-cyanGlow uppercase tracking-widest font-bold">${displayRole}</p>
                                 </div>
                             </div>
-                            <p class="text-gray-400 text-sm leading-relaxed line-clamp-3">${r.bio || 'Contributing to the CuriosityOS mission.'}</p>
+                            <p class="text-gray-400 text-sm leading-relaxed line-clamp-3">${displayBio}</p>
                         </div>
                     `;
-                    grid.innerHTML += card;
+                    htmlContent += card;
                 });
+                grid.innerHTML = htmlContent;
+
             } catch (e) { 
                 console.error("Fetch Error:", e);
                 grid.innerHTML = `<div class="col-span-full text-center py-20 text-red-400/50">Failed to connect to the community database.</div>`;
