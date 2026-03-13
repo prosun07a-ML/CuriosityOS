@@ -51,7 +51,8 @@
                                     <div class="flex justify-between"><span class="text-gray-500">Username</span><span>@${user.username}</span></div>
                                     <div class="flex justify-between"><span class="text-gray-500">Email</span><span>${user.email}</span></div>
                                     <div class="flex justify-between"><span class="text-gray-500">Institution</span><span>${user.institution || 'CuriosityOS Foundation'}</span></div>
-                                    <div class="flex justify-between"><span class="text-gray-500">Contact</span><span>${user.contact || 'Private'}</span></div>
+                                     <div class="flex justify-between"><span class="text-gray-500">Date of Birth</span><span>${user.dob || 'Private'}</span></div>
+                                     <div class="flex justify-between"><span class="text-gray-500">Skills</span><span>${user.skills || 'Your Skills.'}</span></div>
                                 </div>
                             </div>
 
@@ -66,6 +67,7 @@
                                 <div class="mt-8">
                                     <h4 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Bio</h4>
                                     <p class="text-gray-400 leading-relaxed">${user.bio || 'This member is focused on cognitive growth and structured digital learning.'}</p>
+                                    
                                 </div>
                             </div>
                         </div>

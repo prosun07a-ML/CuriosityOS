@@ -4,10 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community | CuriosityOS</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/pocketbase/dist/pocketbase.umd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyanGlow: '#22d3ee',
+                        scienceBlue: '#020617',
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
         body { background-color: #020617; color: white; font-family: 'Inter', sans-serif; }
         .glass-card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
@@ -17,8 +32,8 @@
 <body class="antialiased">
 
     <nav class="p-6 max-w-7xl mx-auto flex justify-between items-center relative z-50">
-        <div class="flex items-center gap-4 cursor-pointer" onclick="window.location.href='index.html'">
-            <img src="https://i.ibb.co.com/pj0XT02b/image.png" alt="Logo" class="w-12 h-12 object-contain">
+        <div class="flex items-center gap-4 cursor-pointer group" onclick="window.location.href='index.html'">
+            <img src="https://i.ibb.co.com/pj0XT02b/image.png" alt="CuriosityOS Logo" class="w-12 h-12 object-contain group-hover:scale-110 transition-transform duration-300">
             <span class="text-white font-bold text-xl tracking-tight">CuriosityOS</span>
         </div>
         <a href="index.html" class="text-sm font-medium text-gray-400 hover:text-white transition-colors">BACK TO HOME</a>
@@ -33,7 +48,7 @@
         <div class="flex flex-wrap justify-center gap-4 mb-12">
             <button onclick="filterCommunity('founding')" id="btn-founding" class="filter-btn active px-8 py-3 rounded-full border border-white/10 font-bold transition-all">Founding Members</button>
             <button onclick="filterCommunity('board')" id="btn-board" class="filter-btn px-8 py-3 rounded-full border border-white/10 font-bold text-gray-400 hover:text-white transition-all">Board Members</button>
-            <button onclick="filterCommunity('members')" id="btn-members" class="filter-btn px-8 py-3 rounded-full border border-white/10 font-bold text-gray-400 hover:text-white transition-all">Members</button>
+            <button onclick="filterCommunity('member')" id="btn-member" class="filter-btn px-8 py-3 rounded-full border border-white/10 font-bold text-gray-400 hover:text-white transition-all">General Members</button>
         </div>
 
         <div id="members-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -43,75 +58,64 @@
     <script>
         const pb = new PocketBase('http://127.0.0.1:8090');
 
-        // Static Data for Founding & Board
-        const staticMembers = {
-            founding: [
-                { name: "Prosun Datta", role: "Founder & CEO", avatar: "https://i.ibb.co.com/pj0XT02b/image.png", bio: "Leading the vision of CuriosityOS." },
-                { name: "Dipto Singha", role: "Co-Founder & Operations", avatar: "https://i.ibb.co.com/pj0XT02b/image.png", bio: "Managing global operations and strategy." }
-            ],
-            board: [
-                { name: "Board Seat Alpha", role: "Strategic Advisor", avatar: "", bio: "Advising on institutional research growth." }
-            ]
-        };
-
         async function filterCommunity(tier) {
-            // Update UI Buttons
+            // 1. Update UI Button States
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active', 'text-white');
+                btn.classList.remove('active', 'text-scienceBlue');
                 btn.classList.add('text-gray-400');
             });
-            document.getElementById(`btn-${tier}`).classList.add('active', 'text-scienceBlue');
+            const activeBtn = document.getElementById(`btn-${tier}`);
+            activeBtn.classList.add('active', 'text-scienceBlue');
+            activeBtn.classList.remove('text-gray-400');
 
             const grid = document.getElementById('members-grid');
             
-            // Animation Out
-            await gsap.to(grid, { opacity: 0, y: 20, duration: 0.2 });
+            // 2. Animation Out
+            await gsap.to(grid, { opacity: 0, y: 10, duration: 0.2 });
             grid.innerHTML = "";
 
-            let people = [];
+            try {
+                // 3. Dynamic Fetch: Authorized = true AND tier matches button
+                const records = await pb.collection('users').getFullList({
+                    filter: `authorized = true && tier = "${tier}"`, 
+                    sort: '-created',
+                });
+                
+                if (records.length === 0) {
+                    grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-600 font-medium">No authorized ${tier}s found.</div>`;
+                }
 
-            if (tier === 'members') {
-                try {
-                    // Fetch only 'authorized' users from PocketBase
-                    const records = await pb.collection('users').getFullList({
-                        filter: 'authorized = true', // Ensure you add an 'authorized' bool field in PB
-                        sort: '-created',
-                    });
-                    people = records.map(r => ({
-                        name: r.name,
-                        role: r.class || "Member",
-                        avatar: r.avatar ? pb.files.getUrl(r, r.avatar) : "https://ui-avatars.com/api/?name=" + r.name,
-                        bio: r.institution || "Member of CuriosityOS"
-                    }));
-                } catch (e) { console.error("PB Fetch Error:", e); }
-            } else {
-                people = staticMembers[tier];
+                // 4. Render Member Cards
+                records.forEach(r => {
+                    const avatarUrl = r.avatar ? pb.files.getUrl(r, r.avatar) : `https://ui-avatars.com/api/?name=${encodeURIComponent(r.name)}&background=22d3ee&color=020617`;
+                    
+                    const card = `
+                        <div onclick="window.location.href='profile.html?id=${r.id}'" 
+                             class="glass-card p-6 rounded-3xl border border-white/5 hover:border-cyanGlow/30 transition-all group cursor-pointer hover:-translate-y-1 hover:shadow-2xl hover:shadow-cyanGlow/10">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-cyanGlow/20 group-hover:border-cyanGlow/50 transition-colors">
+                                    <img src="${avatarUrl}" class="w-full h-full object-cover">
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-white group-hover:text-cyanGlow transition-colors">${r.name}</h3>
+                                    <p class="text-xs text-cyanGlow uppercase tracking-widest font-bold">${r.role || 'Member'}</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-400 text-sm leading-relaxed line-clamp-3">${r.bio || 'Contributing to the CuriosityOS mission.'}</p>
+                        </div>
+                    `;
+                    grid.innerHTML += card;
+                });
+            } catch (e) { 
+                console.error("Fetch Error:", e);
+                grid.innerHTML = `<div class="col-span-full text-center py-20 text-red-400/50">Failed to connect to the community database.</div>`;
             }
 
-            // Render Cards
-            people.forEach(p => {
-                const card = `
-                    <div class="glass-card p-6 rounded-3xl border border-white/5 hover:border-cyanGlow/30 transition-all group">
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-cyanGlow/20">
-                                <img src="${p.avatar || 'https://ui-avatars.com/api/?name='+p.name}" class="w-full h-full object-cover">
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-white group-hover:text-cyanGlow transition-colors">${p.name}</h3>
-                                <p class="text-xs text-cyanGlow uppercase tracking-widest font-bold">${p.role}</p>
-                            </div>
-                        </div>
-                        <p class="text-gray-400 text-sm leading-relaxed">${p.bio}</p>
-                    </div>
-                `;
-                grid.innerHTML += card;
-            });
-
-            // Animation In
+            // 5. Animation In
             gsap.to(grid, { opacity: 1, y: 0, duration: 0.4 });
         }
 
-        // Initialize with Founding Members
+        // Initialize view
         filterCommunity('founding');
     </script>
 </body>
