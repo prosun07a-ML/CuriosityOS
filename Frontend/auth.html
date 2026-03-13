@@ -28,52 +28,59 @@
             background-color: #020617; 
             color: white; 
             background-image: radial-gradient(circle at 50% 0%, #0f172a 0%, transparent 70%);
+            font-family: 'Inter', sans-serif;
         }
         .glass-panel { 
             background: rgba(15, 23, 42, 0.7); 
             border: 1px solid rgba(255, 255, 255, 0.05); 
             backdrop-filter: blur(12px);
         }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: rgba(34, 211, 238, 0.2); border-radius: 10px; }
+        /* Custom scrollbar for the form area */
+        .form-container::-webkit-scrollbar { width: 5px; }
+        .form-container::-webkit-scrollbar-track { background: transparent; }
+        .form-container::-webkit-scrollbar-thumb { background: rgba(34, 211, 238, 0.2); border-radius: 10px; }
     </style>
 </head>
 <body class="antialiased min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
 
     <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-cyanGlow/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-    <main class="glass-panel w-full max-w-2xl rounded-3xl relative overflow-hidden flex flex-col max-h-[90vh]">
+    <main class="glass-panel w-full max-w-2xl rounded-3xl relative overflow-hidden flex flex-col shadow-2xl">
         
-        <div class="p-8 pb-4 text-center z-10 border-b border-white/5 bg-slate-900/50">
-            <div class="flex items-center justify-center gap-2 text-cyanGlow font-bold text-3xl tracking-tight mb-6">
-                <i data-lucide="atom" class="w-8 h-8"></i> CuriosityOS
-            </div>
-            
-            <div class="inline-flex bg-black/40 rounded-xl p-1 relative">
-                <div id="active-pill" class="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-slate-800 rounded-lg transition-all duration-300 ease-out"></div>
-                <button onclick="switchView('login')" id="btn-login" class="px-8 py-2 text-sm font-bold relative z-10 text-white transition-colors">Sign In</button>
-                <button onclick="switchView('register')" id="btn-register" class="px-8 py-2 text-sm font-bold relative z-10 text-gray-500 hover:text-white transition-colors">Sign Up</button>
+        <div class="text-center pt-10 pb-6 px-8">
+            <img src="https://i.ibb.co/pj0XT02b/image.png" 
+                 alt="CuriosityOS Logo" 
+                 class="w-16 h-16 mx-auto mb-4 object-contain brightness-110 drop-shadow-[0_0_15px_rgba(34,211,238,0.3)]">
+            <h2 class="text-3xl font-bold text-white tracking-tight">Join CuriosityOS</h2>
+            <p class="text-gray-400 mt-2 text-sm">Empowering the next generation of researchers.</p>
+        </div>
+
+        <div class="flex justify-center mb-6">
+            <div class="inline-flex bg-black/40 rounded-xl p-1 relative border border-white/5">
+                <div id="active-pill" class="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-slate-800 rounded-lg shadow-lg"></div>
+                <button onclick="switchView('login')" id="btn-login" class="px-10 py-2.5 text-sm font-bold relative z-10 text-white transition-colors">Sign In</button>
+                <button onclick="switchView('register')" id="btn-register" class="px-10 py-2.5 text-sm font-bold relative z-10 text-gray-400 hover:text-white transition-colors">Sign Up</button>
             </div>
         </div>
 
-        <div class="p-8 overflow-y-auto relative h-full">
+        <div class="form-container px-8 pb-10 overflow-y-auto max-h-[55vh]">
             
-            <div id="login-view" class="flex flex-col justify-center">
+            <div id="login-view" class="flex flex-col">
                 <div class="text-center mb-8">
-                    <h2 class="text-2xl font-bold mb-2">Welcome Back</h2>
-                    <p class="text-sm text-gray-400">Log in to continue your journey.</p>
+                    <h3 class="text-xl font-bold text-white mb-1">Welcome Back</h3>
+                    <p class="text-xs text-gray-400">Log in to continue your journey.</p>
                 </div>
 
                 <form id="login-form" class="space-y-5 max-w-sm mx-auto w-full">
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Email / Username</label>
-                        <input type="text" id="log-identity" required placeholder="Email or Username" class="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow transition-colors">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Email / Username</label>
+                        <input type="text" id="log-identity" required placeholder="Email or Username" class="w-full bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow transition-colors">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Password</label>
-                        <input type="password" id="log-password" required placeholder="••••••••" class="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow transition-colors">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Password</label>
+                        <input type="password" id="log-password" required placeholder="••••••••" class="w-full bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow transition-colors">
                     </div>
-                    <button type="submit" id="login-btn" class="w-full bg-cyanGlow text-scienceBlue font-bold py-3 rounded-xl hover:scale-[1.02] transition-transform">Sign In</button>
+                    <button type="submit" id="login-btn" class="w-full bg-cyanGlow text-scienceBlue font-bold py-3.5 rounded-xl hover:scale-[1.02] transition-transform shadow-lg shadow-cyanGlow/20 mt-4">Sign In</button>
                 </form>
             </div>
 
@@ -91,36 +98,36 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" id="reg-name" required placeholder="Full Name" class="bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
-                        <input type="text" id="reg-username" required placeholder="Username" class="bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                        <input type="text" id="reg-name" required placeholder="Full Name" class="bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                        <input type="text" id="reg-username" required placeholder="Username" class="bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="flex flex-col">
                             <label class="text-[10px] text-gray-500 uppercase ml-1 mb-1">Date of Birth</label>
-                            <input type="date" id="reg-dob" required class="bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm [color-scheme:dark]">
+                            <input type="date" id="reg-dob" required class="bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm [color-scheme:dark]">
                         </div>
                         <div class="flex flex-col">
                             <label class="text-[10px] text-gray-500 uppercase ml-1 mb-1">Contact Number</label>
-                            <input type="tel" id="reg-contact" required placeholder="Contact Number" class="bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                            <input type="tel" id="reg-contact" required placeholder="Contact Number" class="bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" id="reg-class" required placeholder="Class / Std." class="bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
-                        <input type="text" id="reg-institution" required placeholder="Institution Name" class="bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                        <input type="text" id="reg-class" required placeholder="Class / Std." class="bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                        <input type="text" id="reg-institution" required placeholder="Institution Name" class="bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
                     </div>
 
-                    <textarea id="reg-address" required placeholder="Address" class="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-white h-20 outline-none focus:border-cyanGlow text-sm resize-none"></textarea>
+                    <textarea id="reg-address" required placeholder="Full Address" class="w-full bg-black/30 border border-white/10 p-3 rounded-xl text-white h-20 outline-none focus:border-cyanGlow text-sm resize-none"></textarea>
                     
-                    <input type="email" id="reg-email" required placeholder="Email Address" class="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                    <input type="email" id="reg-email" required placeholder="Email Address" class="w-full bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="password" id="reg-password" required placeholder="Password" class="bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
-                        <input type="password" id="reg-password-confirm" required placeholder="Confirm Password" class="bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                        <input type="password" id="reg-password" required placeholder="Password" class="bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                        <input type="password" id="reg-password-confirm" required placeholder="Confirm Password" class="bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
                     </div>
 
-                    <button type="submit" id="reg-btn" class="w-full bg-cyanGlow text-scienceBlue font-bold py-4 rounded-xl hover:scale-[1.02] transition-all">Create Account</button>
+                    <button type="submit" id="reg-btn" class="w-full bg-white text-scienceBlue font-bold py-4 rounded-xl hover:scale-[1.02] transition-transform mt-4">Create Account</button>
                 </form>
             </div>
         </div>
@@ -128,45 +135,66 @@
 
     <script>
         lucide.createIcons();
+        // Replace with your actual PocketBase URL if hosted
         const pb = new PocketBase('http://127.0.0.1:8090');
 
         function switchView(view) {
             const pill = document.getElementById('active-pill');
             const vLogin = document.getElementById('login-view');
             const vReg = document.getElementById('register-view');
+            const btnLogin = document.getElementById('btn-login');
+            const btnRegister = document.getElementById('btn-register');
 
             if (view === 'register') {
-                gsap.to(pill, { x: "100%", duration: 0.3 });
-                vLogin.classList.add('hidden');
-                vReg.classList.remove('hidden');
-                gsap.to(vReg, { opacity: 1, duration: 0.3 });
+                gsap.to(pill, { x: "100%", duration: 0.4, ease: "power2.out" });
+                btnRegister.classList.replace('text-gray-400', 'text-white');
+                btnLogin.classList.replace('text-white', 'text-gray-400');
+                
+                gsap.to(vLogin, { opacity: 0, y: 10, duration: 0.2, onComplete: () => {
+                    vLogin.classList.add('hidden');
+                    vReg.classList.remove('hidden');
+                    gsap.fromTo(vReg, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.3 });
+                }});
             } else {
-                gsap.to(pill, { x: "0%", duration: 0.3 });
-                vReg.classList.add('hidden');
-                vLogin.classList.remove('hidden');
-                gsap.to(vLogin, { opacity: 1, duration: 0.3 });
+                gsap.to(pill, { x: 0, duration: 0.4, ease: "power2.out" });
+                btnLogin.classList.replace('text-gray-400', 'text-white');
+                btnRegister.classList.replace('text-white', 'text-gray-400');
+
+                gsap.to(vReg, { opacity: 0, y: 10, duration: 0.2, onComplete: () => {
+                    vReg.classList.add('hidden');
+                    vLogin.classList.remove('hidden');
+                    gsap.fromTo(vLogin, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.3 });
+                }});
             }
         }
 
+        // Avatar Preview logic
         document.getElementById('reg-avatar').onchange = (e) => {
             const [file] = e.target.files;
             if (file) {
                 const preview = document.getElementById('reg-avatar-preview');
+                const icon = preview.nextElementSibling;
                 preview.src = URL.createObjectURL(file);
                 preview.classList.remove('hidden');
+                icon.classList.add('hidden');
             }
         };
 
         // Login Logic
         document.getElementById('login-form').onsubmit = async (e) => {
             e.preventDefault();
+            const btn = document.getElementById('login-btn');
+            btn.innerText = "Authenticating...";
             try {
                 await pb.collection('users').authWithPassword(
                     document.getElementById('log-identity').value, 
                     document.getElementById('log-password').value
                 );
                 window.location.href = "index.html";
-            } catch (err) { alert("Invalid credentials"); }
+            } catch (err) { 
+                alert("Invalid credentials"); 
+                btn.innerText = "Sign In";
+            }
         };
 
         // Register Logic
