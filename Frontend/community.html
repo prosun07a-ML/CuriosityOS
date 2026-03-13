@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CuriosityOS | Community</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyanGlow: '#22d3ee',
+                        scienceBlue: '#020617',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #020617; color: white; overflow-x: hidden; }
+        .glass-card { 
+            background: rgba(15, 23, 42, 0.4); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(12px);
+        }
+        .profile-border {
+            position: relative;
+            padding: 2px;
+            background: linear-gradient(to bottom right, #22d3ee, transparent);
+            border-radius: 1rem;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-cyanGlow selection:text-scienceBlue">
+
+    <nav class="p-6 max-w-7xl mx-auto flex justify-between items-center">
+        <div class="flex items-center gap-2 text-cyanGlow font-bold text-xl tracking-tight">
+            <i data-lucide="atom"></i> CuriosityOS
+        </div>
+        <a href="index.html" class="text-sm font-medium text-gray-400 hover:text-white transition-colors">BACK TO HOME</a>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-20">
+        <div class="max-w-3xl mb-16">
+            <h1 class="text-5xl font-bold mb-6 tracking-tight leading-tight" id="title">
+                The minds behind <span class="text-cyanGlow">CuriosityOS</span>
+            </h1>
+            <p class="text-xl text-gray-400 leading-relaxed" id="subtitle">
+                Meet the founders and developers dedicated to transforming passive digital consumption into structured, cognitive growth.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            
+            <div class="profile-border opacity-0 member-card">
+                <div class="glass-card p-8 rounded-[0.9rem] h-full">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="bg-cyanGlow/10 p-4 rounded-xl">
+                            <i data-lucide="shield-check" class="text-cyanGlow w-8 h-8"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-cyanGlow tracking-[0.2em] uppercase">Founder & CEO</span>
+                    </div>
+                    <h2 class="text-3xl font-bold mb-2">Prosun Datta</h2>
+                    <p class="text-cyanGlow font-medium mb-4">Lead Developer & Field Manager</p>
+                    <p class="text-gray-400 leading-relaxed mb-6">
+                        Architect of CuriosityOS and visionary behind this platform. Focused on building systems that reward curiosity and deep technical skill.
+                    </p>
+                    <div class="flex gap-4">
+                        <i data-lucide="github" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer transition-colors"></i>
+                        <i data-lucide="linkedin" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer transition-colors"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-border opacity-0 member-card">
+                <div class="glass-card p-8 rounded-[0.9rem] h-full">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="bg-purple-500/10 p-4 rounded-xl">
+                            <i data-lucide="terminal" class="text-purple-400 w-8 h-8"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-purple-400 tracking-[0.2em] uppercase">Co-Founder</span>
+                    </div>
+                    <h2 class="text-3xl font-bold mb-2">Dipto Singha</h2>
+                    <p class="text-purple-400 font-medium mb-4">Operations Manager & Junior Developer</p>
+                    <p class="text-gray-400 leading-relaxed mb-6">
+                        Driving the operational excellence and strategic deployment of educational frameworks across the CuriosityOS ecosystem.
+                    </p>
+                    <div class="flex gap-4">
+                        <i data-lucide="twitter" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer transition-colors"></i>
+                        <i data-lucide="mail" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer transition-colors"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // GSAP Entrance Animations
+        const tl = gsap.timeline();
+
+        tl.from("#title", { y: 30, opacity: 0, duration: 0.8, ease: "power3.out" })
+          .from("#subtitle", { y: 20, opacity: 0, duration: 0.8, ease: "power3.out" }, "-=0.6")
+          .to(".member-card", { 
+              opacity: 1, 
+              y: 0, 
+              stagger: 0.2, 
+              duration: 1, 
+              ease: "expo.out" 
+          }, "-=0.4");
+    </script>
+</body>
+</html>

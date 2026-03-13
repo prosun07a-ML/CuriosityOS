@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+    <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.umd.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CuriosityOS | Educational Research Platform</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        scienceBlue: '#0B1E3D',
+                        cyanGlow: '#00E5FF',
+                        curiosityOrange: '#FF7A18',
+                        darkNavy: '#040b17',
+                        panelBg: 'rgba(11, 30, 61, 0.7)'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Space Grotesk', 'sans-serif']
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            background-color: #040b17;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #040b17;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0B1E3D;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00E5FF;
+        }
+
+        /* Glassmorphism utilities */
+        .glass-panel {
+            background: rgba(11, 30, 61, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 229, 255, 0.1);
+        }
+        
+        .glass-panel:hover {
+            border-color: rgba(0, 229, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+        }
+
+        /* Intro Overlay */
+        #intro-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background-color: #0B1E3D;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #intro-canvas {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .intro-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        /* Main Canvas Background */
+        #bg-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Text Gradients */
+        .text-gradient {
+            background: linear-gradient(to right, #00E5FF, #FF7A18);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Chart Bars */
+        .chart-bar {
+            transform-origin: bottom;
+            transform: scaleY(0);
+        }
+        
+        /* Chatbot Scroll */
+        #chat-messages {
+            scrollbar-width: thin;
+            scrollbar-color: #0B1E3D transparent;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-cyanGlow selection:text-scienceBlue">
+
+    <!-- 1. CINEMATIC ENTRANCE -->
+    <div id="intro-overlay">
+        <canvas id="intro-canvas"></canvas>
+        <div class="intro-content">
+            <h1 id="intro-title" class="font-heading text-5xl md:text-7xl font-bold text-white tracking-tight opacity-0 scale-95 drop-shadow-[0_0_15px_rgba(0,229,255,0.8)]">
+                CuriosityOS
+            </h1>
+            <p id="intro-subtitle" class="font-sans text-cyanGlow mt-4 text-lg md:text-xl tracking-widest uppercase opacity-0">
+                Curiosity Driven Learning Platform
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Navigation -->
+   <nav class="fixed w-full z-50 glass-panel border-b-0 border-white/5 transition-all duration-300" id="navbar">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+            
+            <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
+                <img src="https://i.ibb.co.com/cKXJh0rK/make-this-logo-perfect-and-give-me-the-link-of-thi.png" 
+                     alt="CuriosityOS Logo" 
+                     class="w-16 h-16 object-contain brightness-110">
+                <span class="font-heading font-bold text-2xl text-white tracking-tight">CuriosityOS</span>
+            </div>
+
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="about.html" class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">About</a>
+                <a href="#" class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">Performance</a>
+                <a href="project.html" class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">Project</a>
+                <a href="research.html" class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">Research</a>
+                <a href="community.html" class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">Community</a>
+                <a href="auth.html" class="px-6 py-2 rounded-full bg-cyanGlow/10 text-cyanGlow border border-cyanGlow/30 hover:bg-cyanGlow/20 transition-all duration-300 font-bold">Join Us</a>
+            </div>
+
+            <div class="md:hidden flex items-center">
+                <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+        </div>
+    </div>
+</nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 z-40 bg-scienceBlue/95 backdrop-blur-xl flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="flex flex-col space-y-8 text-center">
+            <a href="about.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">About</a>
+            <a href="auth.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">Performance</a>
+            <a href="project.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">Project</a>
+            <a href="research.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">Research</a>
+            <a href="community.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">Community</a>
+            <a href="auth.html" class="mobile-link px-8 py-3 rounded-full bg-cyanGlow text-scienceBlue font-bold text-lg mt-4">Join Us</a>
+        </div>
+    </div>
+
+    <main>
+        <!-- 2. HERO SECTION -->
+        <section id="hero" class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel mb-8 animate-fade-in-up">
+                    <span class="w-2 h-2 rounded-full bg-curiosityOrange animate-pulse"></span>
+                    <span class="text-xs font-medium text-gray-300 uppercase tracking-wider">CuriosityOS Foundation Initiative</span>
+                </div>
+                <h1 class="font-heading text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-tight">
+                    Rebuilding the Future <br />
+                    Through <span class="text-gradient">Curiosity</span>
+                </h1>
+                <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-400 font-sans mb-10">
+                    A research driven platform advancing curiosity, learning behavior, and measurable student progress.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <a href="#platform" class="w-full sm:w-auto px-8 py-4 rounded-lg bg-cyanGlow text-scienceBlue font-bold hover:bg-white transition-colors duration-300 flex items-center justify-center gap-2">
+                        Explore Platform <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </a>
+                    <a href="#research" class="w-full sm:w-auto px-8 py-4 rounded-lg glass-panel text-white hover:bg-white/10 transition-colors duration-300 flex items-center justify-center gap-2">
+                        View Research Initiative <i data-lucide="microscope" class="w-5 h-5"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Scroll Indicator -->
+            <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
+                <span class="text-xs uppercase tracking-widest text-cyanGlow">Scroll to explore</span>
+                <div class="w-[1px] h-12 bg-gradient-to-b from-cyanGlow to-transparent"></div>
+            </div>
+        </section>
+
+        <!-- 3. ABOUT CURIOSITYOS -->
+        <section id="about" class="py-24 relative z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16 section-header">
+                    <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">The Curiosity Deficit</h2>
+                    <div class="w-24 h-1 bg-cyanGlow mx-auto rounded-full"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Problem -->
+                    <div class="glass-panel p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 about-card">
+                        <div class="w-14 h-14 rounded-xl bg-red-500/10 flex items-center justify-center mb-6 border border-red-500/20">
+                            <i data-lucide="alert-circle" class="w-7 h-7 text-red-400"></i>
+                        </div>
+                        <h3 class="font-heading text-2xl font-bold text-white mb-4">Problem</h3>
+                        <p class="text-gray-400 leading-relaxed">
+                            Traditional education suppresses curiosity. Standardized testing and rigid curriculums prioritize memorization over exploration, leading to disengaged students.
+                        </p>
+                    </div>
+
+                    <!-- Solution -->
+                    <div class="glass-panel p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 about-card">
+                        <div class="w-14 h-14 rounded-xl bg-cyanGlow/10 flex items-center justify-center mb-6 border border-cyanGlow/20">
+                            <i data-lucide="lightbulb" class="w-7 h-7 text-cyanGlow"></i>
+                        </div>
+                        <h3 class="font-heading text-2xl font-bold text-white mb-4">Solution</h3>
+                        <p class="text-gray-400 leading-relaxed">
+                            CuriosityOS measures and develops curiosity in students through interactive, inquiry-based learning environments that adapt to individual interests.
+                        </p>
+                    </div>
+
+                    <!-- Mission -->
+                    <div class="glass-panel p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 about-card">
+                        <div class="w-14 h-14 rounded-xl bg-curiosityOrange/10 flex items-center justify-center mb-6 border border-curiosityOrange/20">
+                            <i data-lucide="rocket" class="w-7 h-7 text-curiosityOrange"></i>
+                        </div>
+                        <h3 class="font-heading text-2xl font-bold text-white mb-4">Mission</h3>
+                        <p class="text-gray-400 leading-relaxed">
+                            Build the world's first curiosity-driven learning intelligence system to reshape how knowledge is acquired and assessed globally.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. STUDENT PERFORMANCE PLATFORM & 5. CURIOSITY ANALYTICS -->
+        <section id="platform" class="py-24 relative z-10 bg-scienceBlue/20 border-y border-white/5">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-12 section-header">
+                    <div>
+                        <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">Student Performance Platform</h2>
+                        <p class="text-gray-400 max-w-2xl">Real-time telemetry of student engagement, question formulation, and exploratory behavior.</p>
+                    </div>
+                    <div class="mt-6 md:mt-0 flex items-center gap-2 text-cyanGlow text-sm font-medium bg-cyanGlow/10 px-4 py-2 rounded-lg border border-cyanGlow/20">
+                        <span class="w-2 h-2 rounded-full bg-cyanGlow animate-pulse"></span> Live Dashboard Preview
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Metrics Column -->
+                    <div class="lg:col-span-1 space-y-6">
+                        <div class="glass-panel p-6 rounded-2xl metric-card">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-gray-400 font-medium text-sm uppercase tracking-wider">Curiosity Score</span>
+                                <i data-lucide="activity" class="text-cyanGlow w-5 h-5"></i>
+                            </div>
+                            <div class="flex items-baseline gap-2">
+                                <span class="font-heading text-5xl font-bold text-white counter" data-target="82">0</span>
+                                <span class="text-cyanGlow text-sm font-medium">/ 100</span>
+                            </div>
+                            <div class="mt-4 w-full bg-gray-800 rounded-full h-1.5">
+                                <div class="bg-gradient-to-r from-cyanGlow to-curiosityOrange h-1.5 rounded-full w-[82%]"></div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-2xl metric-card">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-gray-400 font-medium text-sm uppercase tracking-wider">Weekly Questions</span>
+                                <i data-lucide="help-circle" class="text-curiosityOrange w-5 h-5"></i>
+                            </div>
+                            <div class="flex items-baseline gap-2">
+                                <span class="font-heading text-5xl font-bold text-white counter" data-target="23">0</span>
+                            </div>
+                            <p class="text-xs text-green-400 mt-2 flex items-center gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +14% from last week</p>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-2xl metric-card">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-gray-400 font-medium text-sm uppercase tracking-wider">Learning Time</span>
+                                <i data-lucide="clock" class="text-purple-400 w-5 h-5"></i>
+                            </div>
+                            <div class="flex items-baseline gap-2">
+                                <span class="font-heading text-5xl font-bold text-white counter" data-target="14">0</span>
+                                <span class="text-gray-400 text-sm font-medium">hours</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Chart Area -->
+                    <div class="lg:col-span-2 glass-panel p-8 rounded-2xl flex flex-col">
+                        <div class="flex justify-between items-center mb-8">
+                            <div>
+                                <h3 class="font-heading text-xl font-bold text-white">Weekly Curiosity Growth</h3>
+                                <p class="text-sm text-gray-400">Exploration index over the last 7 days</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="px-3 py-1 rounded bg-white/10 text-xs text-white hover:bg-white/20 transition">Week</button>
+                                <button class="px-3 py-1 rounded bg-transparent text-xs text-gray-400 hover:text-white transition">Month</button>
+                            </div>
+                        </div>
+
+                        <!-- Bar Chart Mockup -->
+                        <div class="flex-grow flex items-end justify-between gap-2 md:gap-4 pt-10 pb-4 border-b border-white/10 relative">
+                            <!-- Grid lines -->
+                            <div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-10">
+                                <div class="w-full h-px bg-white"></div>
+                                <div class="w-full h-px bg-white"></div>
+                                <div class="w-full h-px bg-white"></div>
+                                <div class="w-full h-px bg-white"></div>
+                            </div>
+
+                            <!-- Bars -->
+                            <div class="w-full flex justify-center group">
+                                <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative" style="height: 40%;">
+                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">40</div>
+                                </div>
+                            </div>
+                            <div class="w-full flex justify-center group">
+                                <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative" style="height: 55%;">
+                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">55</div>
+                                </div>
+                            </div>
+                            <div class="w-full flex justify-center group">
+                                <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative" style="height: 45%;">
+                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">45</div>
+                                </div>
+                            </div>
+                            <div class="w-full flex justify-center group">
+                                <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative" style="height: 70%;">
+                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">70</div>
+                                </div>
+                            </div>
+                            <div class="w-full flex justify-center group">
+                                <div class="w-full max-w-[40px] bg-gradient-to-t from-scienceBlue to-cyanGlow/50 border border-cyanGlow rounded-t-sm chart-bar relative shadow-[0_0_15px_rgba(0,229,255,0.3)]" style="height: 85%;">
+                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">85</div>
+                                </div>
+                            </div>
+                            <div class="w-full flex justify-center group">
+                                <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative" style="height: 60%;">
+                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">60</div>
+                                </div>
+                            </div>
+                            <div class="w-full flex justify-center group">
+                                <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative" style="height: 75%;">
+                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">75</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between mt-4 text-xs text-gray-400 font-medium uppercase tracking-wider">
+                            <span class="w-full text-center">Mon</span>
+                            <span class="w-full text-center">Tue</span>
+                            <span class="w-full text-center">Wed</span>
+                            <span class="w-full text-center">Thu</span>
+                            <span class="w-full text-center text-cyanGlow">Fri</span>
+                            <span class="w-full text-center">Sat</span>
+                            <span class="w-full text-center">Sun</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. RESEARCH INITIATIVE -->
+        <section id="research" class="py-24 relative z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16 section-header">
+                    <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">Curiosity Driven Learning Intervention Study</h2>
+                    <p class="text-gray-400 max-w-3xl mx-auto">The CuriosityOS Research Project aims to quantify the impact of curiosity-centric pedagogies on long-term knowledge retention.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-panel p-8 rounded-2xl border-l-4 border-l-cyanGlow research-card">
+                        <h4 class="font-heading text-xl font-bold text-white mb-3">Field Research</h4>
+                        <p class="text-gray-400 text-sm">Conducting primary school curiosity experiments to observe natural inquiry patterns in unconstrained environments.</p>
+                    </div>
+                    <div class="glass-panel p-8 rounded-2xl border-l-4 border-l-curiosityOrange research-card">
+                        <h4 class="font-heading text-xl font-bold text-white mb-3">Student Data Analysis</h4>
+                        <p class="text-gray-400 text-sm">Tracking learning behavior, question formulation density, and exploratory pathways through complex topics.</p>
+                    </div>
+                    <div class="glass-panel p-8 rounded-2xl border-l-4 border-l-purple-500 research-card">
+                        <h4 class="font-heading text-xl font-bold text-white mb-3">Research Dashboard</h4>
+                        <p class="text-gray-400 text-sm">Aggregating performance visualization for educators and researchers to identify optimal intervention points.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. AI HELP CENTER CHATBOT -->
+        <section id="ai-assistant" class="py-24 relative z-10 bg-gradient-to-b from-transparent to-scienceBlue/30">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col lg:flex-row gap-12 items-center">
+                    <div class="lg:w-1/2 section-header">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyanGlow/10 text-cyanGlow border border-cyanGlow/20 mb-6">
+                            <i data-lucide="bot" class="w-4 h-4"></i>
+                            <span class="text-xs font-medium uppercase tracking-wider">Intelligent Agent</span>
+                        </div>
+                        <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-6">AI Learning Assistant</h2>
+                        <p class="text-gray-400 text-lg mb-8 leading-relaxed">
+                            Our conversational AI doesn't just give answers—it guides students to discover them. By employing Socratic questioning, the assistant nurtures the student's innate curiosity.
+                        </p>
+                        <ul class="space-y-4 mb-8">
+                            <li class="flex items-center gap-3 text-gray-300">
+                                <i data-lucide="check-circle-2" class="text-cyanGlow w-5 h-5"></i> Context-aware responses
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-300">
+                                <i data-lucide="check-circle-2" class="text-cyanGlow w-5 h-5"></i> Encourages follow-up questions
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-300">
+                                <i data-lucide="check-circle-2" class="text-cyanGlow w-5 h-5"></i> Feeds data back to the curiosity metric
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="lg:w-1/2 w-full">
+                        <!-- Chat UI Mockup -->
+                        <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 shadow-2xl flex flex-col h-[500px]">
+                            <!-- Chat Header -->
+                            <div class="bg-darkNavy/80 p-4 border-b border-white/10 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-cyanGlow/20 flex items-center justify-center border border-cyanGlow/50">
+                                    <i data-lucide="cpu" class="text-cyanGlow w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-heading font-bold text-white text-sm">CuriosityOS AI</h3>
+                                    <p class="text-xs text-cyanGlow flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-cyanGlow"></span> Online
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Chat Messages -->
+                            <div id="chat-messages" class="flex-grow p-6 overflow-y-auto flex flex-col gap-4">
+                                <!-- Initial Messages -->
+                                <div class="flex gap-3 max-w-[85%]">
+                                    <div class="w-8 h-8 rounded-full bg-cyanGlow/20 flex-shrink-0 flex items-center justify-center border border-cyanGlow/50 mt-1">
+                                        <i data-lucide="cpu" class="text-cyanGlow w-4 h-4"></i>
+                                    </div>
+                                    <div class="bg-white/5 border border-white/10 rounded-2xl rounded-tl-none p-3 text-sm text-gray-200">
+                                        Hello! I'm your learning assistant. What are you curious about today?
+                                    </div>
+                                </div>
+                                
+                                <div class="flex gap-3 max-w-[85%] self-end flex-row-reverse">
+                                    <div class="w-8 h-8 rounded-full bg-curiosityOrange/20 flex-shrink-0 flex items-center justify-center border border-curiosityOrange/50 mt-1">
+                                        <i data-lucide="user" class="text-curiosityOrange w-4 h-4"></i>
+                                    </div>
+                                    <div class="bg-curiosityOrange/20 border border-curiosityOrange/30 rounded-2xl rounded-tr-none p-3 text-sm text-white">
+                                        What is photosynthesis?
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-3 max-w-[85%]">
+                                    <div class="w-8 h-8 rounded-full bg-cyanGlow/20 flex-shrink-0 flex items-center justify-center border border-cyanGlow/50 mt-1">
+                                        <i data-lucide="cpu" class="text-cyanGlow w-4 h-4"></i>
+                                    </div>
+                                    <div class="bg-white/5 border border-white/10 rounded-2xl rounded-tl-none p-3 text-sm text-gray-200">
+                                        Photosynthesis is the process plants use to convert sunlight into energy. They take in carbon dioxide and water, and use light to create glucose (food) and oxygen. <br><br>What part of that process seems most interesting to you?
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Chat Input -->
+                            <div class="p-4 bg-darkNavy/80 border-t border-white/10">
+                                <form id="chat-form" class="relative flex items-center">
+                                    <input type="text" id="chat-input" placeholder="Ask a question..." class="w-full bg-white/5 border border-white/10 rounded-full py-3 pl-4 pr-12 text-sm text-white focus:outline-none focus:border-cyanGlow/50 transition-colors" autocomplete="off">
+                                    <button type="submit" class="absolute right-2 w-8 h-8 rounded-full bg-cyanGlow flex items-center justify-center text-scienceBlue hover:bg-white transition-colors">
+                                        <i data-lucide="send" class="w-4 h-4 ml-0.5"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. PLATFORM FEATURES -->
+        <section id="features" class="py-24 relative z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16 section-header">
+                    <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">Core Capabilities</h2>
+                    <div class="w-24 h-1 bg-cyanGlow mx-auto rounded-full"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="glass-panel p-6 rounded-2xl feature-card hover:bg-white/5 transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mb-4 text-blue-400">
+                            <i data-lucide="radar" class="w-6 h-6"></i>
+                        </div>
+                        <h4 class="font-heading font-bold text-white mb-2">Student Curiosity Tracking</h4>
+                        <p class="text-sm text-gray-400">Continuous monitoring of exploratory behavior and question generation metrics.</p>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl feature-card hover:bg-white/5 transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-cyanGlow/20 flex items-center justify-center mb-4 text-cyanGlow">
+                            <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
+                        </div>
+                        <h4 class="font-heading font-bold text-white mb-2">Research Data Analytics</h4>
+                        <p class="text-sm text-gray-400">Comprehensive dashboards for researchers to analyze cohort performance and trends.</p>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl feature-card hover:bg-white/5 transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center mb-4 text-purple-400">
+                            <i data-lucide="brain-circuit" class="w-6 h-6"></i>
+                        </div>
+                        <h4 class="font-heading font-bold text-white mb-2">AI Learning Assistance</h4>
+                        <p class="text-sm text-gray-400">Socratic AI agents designed to prompt deeper thinking rather than just providing answers.</p>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl feature-card hover:bg-white/5 transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-curiosityOrange/20 flex items-center justify-center mb-4 text-curiosityOrange">
+                            <i data-lucide="network" class="w-6 h-6"></i>
+                        </div>
+                        <h4 class="font-heading font-bold text-white mb-2">Educational Collaboration</h4>
+                        <p class="text-sm text-gray-400">Tools for schools and researchers to share anonymized data and pedagogical insights.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. CALL TO ACTION -->
+        <section id="cta" class="py-32 relative z-10">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div class="glass-panel p-12 rounded-3xl border border-cyanGlow/30 relative overflow-hidden">
+                    <!-- Decorative glow -->
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-cyanGlow/10 blur-[100px] rounded-full pointer-events-none"></div>
+                    
+                    <h2 class="font-heading text-4xl md:text-6xl font-bold text-white mb-6 relative z-10">Join the <span class="text-gradient">Curiosity Revolution</span></h2>
+                    <p class="text-xl text-gray-300 mb-10 relative z-10">Partner with the CuriosityOS Foundation to bring research-backed, curiosity-driven learning to your institution.</p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+                        <button class="w-full sm:w-auto px-8 py-4 rounded-lg bg-cyanGlow text-scienceBlue font-bold hover:bg-white transition-colors duration-300">
+                            Start Exploring
+                        </button>
+                        <button class="w-full sm:w-auto px-8 py-4 rounded-lg bg-transparent border border-white/20 text-white hover:bg-white/10 transition-colors duration-300">
+                            View Research
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 10. FOOTER -->
+    <footer class="border-t border-white/10 bg-darkNavy relative z-10 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i data-lucide="atom" class="text-cyanGlow w-6 h-6"></i>
+                        <span class="font-heading font-bold text-xl text-white tracking-tight">CuriosityOS Foundation</span>
+                    </div>
+                    <p class="text-gray-400 text-sm max-w-sm mb-6">
+                        An educational technology research initiative dedicated to measuring and improving curiosity-driven learning in students worldwide.
+                    </p>
+                    <div class="text-sm text-gray-500">
+                        <p class="mb-1"><span class="text-gray-300">Founder:</span> Prosun Kanti Datta</p>
+                        <p><span class="text-gray-300">Email:</span> prosun07a@gmail.com</p>
+                        <p><span class="text-gray-300">Contact:</span> 01312646056</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-heading font-bold text-white mb-4 uppercase tracking-wider text-sm">Platform</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-cyanGlow transition-colors">Research Initiative</a></li>
+                        <li><a href="#" class="hover:text-cyanGlow transition-colors">Analytics Dashboard</a></li>
+                         <li><a href="#" class="hover:text-cyanGlow transition-colors">Projects</a></li>
+                         <li><a href="#" class="hover:text-cyanGlow transition-colors">AI Assistant</a></li>
+                        <li><a href="#" class="hover:text-cyanGlow transition-colors">Documentation</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-heading font-bold text-white mb-4 uppercase tracking-wider text-sm">Connect</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-cyanGlow transition-colors flex items-center gap-2"><i data-lucide="facebook" class="w-4 h-4"></i> Facebook</a></li>
+                        <li><a href="#" class="hover:text-cyanGlow transition-colors flex items-center gap-2"><i data-lucide="instagram" class="w-4 h-4"></i> Instagram</a></li>
+                        <li><a href="#" class="hover:text-cyanGlow transition-colors flex items-center gap-2"><i data-lucide="linkedin" class="w-4 h-4"></i> LinkedIn</a></li>
+                        <li><a href="#" class="hover:text-cyanGlow transition-colors flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4"></i> Email</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-xs text-gray-500">© 2026 CuriosityOS Bangladesh. All rights reserved.</p>
+                <div class="flex gap-4 text-xs text-gray-500">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // 1. Create the bridge to the backpack
+const pb = new PocketBase('http://127.0.0.1:8090');
+
+// 2. This function grabs your numbers from the backpack and shows them
+async function getMyNumbers() {
+    try {
+        // Look in the 'student_analytics' notebook for the newest numbers
+        const record = await pb.collection('student_analytics').getFirstListItem('', {
+            sort: '-created',
+        });
+
+        if (record) {
+            // Update Curiosity Score (82)
+            const scoreEl = document.querySelector('[data-target="82"]');
+            scoreEl.innerText = record.curiosity_score;
+            scoreEl.setAttribute('data-target', record.curiosity_score);
+
+            // Update Weekly Questions (23)
+            const questionsEl = document.querySelector('[data-target="23"]');
+            questionsEl.innerText = record.total_questions;
+            questionsEl.setAttribute('data-target', record.total_questions);
+
+            // Update Learning Time (14)
+            const timeEl = document.querySelector('[data-target="14"]');
+            timeEl.innerText = record.learning_hours;
+            timeEl.setAttribute('data-target', record.learning_hours);
+        }
+    } catch (err) {
+        console.log("No data found in PocketBase yet, using the default toy numbers!");
+    }
+}
+
+// 3. Run this immediately so the numbers update as soon as the page opens
+getMyNumbers();
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // --- Canvas Particle Network Background ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const particleCount = 100;
+        const connectionDistance = 150;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+                // Mix of cyan and blue
+                this.color = Math.random() > 0.5 ? 'rgba(0, 229, 255, 0.5)' : 'rgba(11, 30, 61, 0.8)';
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < connectionDistance) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        // Opacity based on distance
+                        const opacity = 1 - (distance / connectionDistance);
+                        ctx.strokeStyle = `rgba(0, 229, 255, ${opacity * 0.15})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        // Intro Canvas (similar but denser/faster for the intro)
+        const introCanvas = document.getElementById('intro-canvas');
+        const introCtx = introCanvas.getContext('2d');
+        let introParticles = [];
+
+        function resizeIntroCanvas() {
+            introCanvas.width = window.innerWidth;
+            introCanvas.height = window.innerHeight;
+        }
+
+        class IntroParticle extends Particle {
+            constructor() {
+                super();
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.color = 'rgba(0, 229, 255, 0.8)';
+            }
+        }
+
+        function initIntroParticles() {
+            introParticles = [];
+            for (let i = 0; i < 150; i++) {
+                introParticles.push(new IntroParticle());
+            }
+        }
+
+        function animateIntroParticles() {
+            if(document.getElementById('intro-overlay').style.display === 'none') return;
+            
+            introCtx.clearRect(0, 0, introCanvas.width, introCanvas.height);
+            
+            for (let i = 0; i < introParticles.length; i++) {
+                introParticles[i].update();
+                introParticles[i].draw();
+                
+                for (let j = i; j < introParticles.length; j++) {
+                    const dx = introParticles[i].x - introParticles[j].x;
+                    const dy = introParticles[i].y - introParticles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 100) {
+                        introCtx.beginPath();
+                        introCtx.moveTo(introParticles[i].x, introParticles[i].y);
+                        introCtx.lineTo(introParticles[j].x, introParticles[j].y);
+                        const opacity = 1 - (distance / 100);
+                        introCtx.strokeStyle = `rgba(0, 229, 255, ${opacity * 0.3})`;
+                        introCtx.lineWidth = 1.5;
+                        introCtx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateIntroParticles);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            resizeIntroCanvas();
+        });
+
+        resizeCanvas();
+        resizeIntroCanvas();
+        initParticles();
+        initIntroParticles();
+        animateParticles();
+        animateIntroParticles();
+
+        // --- GSAP Animations ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Intro Sequence
+        const tl = gsap.timeline();
+        
+        tl.to("#intro-title", {
+            opacity: 1,
+            scale: 1,
+            duration: 1.5,
+            ease: "power3.out",
+            delay: 0.5
+        })
+        .to("#intro-subtitle", {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: "power2.out"
+        }, "-=0.5")
+        .to("#intro-overlay", {
+            yPercent: -100,
+            duration: 1.2,
+            ease: "power4.inOut",
+            delay: 1.5,
+            onComplete: () => {
+                document.getElementById('intro-overlay').style.display = 'none';
+                // Trigger scroll animations after intro
+                ScrollTrigger.refresh();
+            }
+        });
+
+        // Navbar blur effect on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('bg-scienceBlue/80', 'shadow-lg');
+                nav.classList.remove('border-white/5');
+                nav.classList.add('border-cyanGlow/20');
+            } else {
+                nav.classList.remove('bg-scienceBlue/80', 'shadow-lg', 'border-cyanGlow/20');
+                nav.classList.add('border-white/5');
+            }
+        });
+
+        // Section Headers Animation
+        gsap.utils.toArray('.section-header').forEach(header => {
+            gsap.from(header, {
+                scrollTrigger: {
+                    trigger: header,
+                    start: "top 80%",
+                },
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power3.out"
+            });
+        });
+
+        // About Cards Animation
+        gsap.from(".about-card", {
+            scrollTrigger: {
+                trigger: "#about",
+                start: "top 70%",
+            },
+            y: 50,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: "power3.out"
+        });
+
+        // Dashboard Metrics Counter Animation
+        const metricsSection = document.getElementById('platform');
+        let countersAnimated = false;
+
+        ScrollTrigger.create({
+            trigger: metricsSection,
+            start: "top 75%",
+            onEnter: () => {
+                if (!countersAnimated) {
+                    const counters = document.querySelectorAll('.counter');
+                    counters.forEach(counter => {
+                        const target = +counter.getAttribute('data-target');
+                        gsap.to(counter, {
+                            innerHTML: target,
+                            duration: 2,
+                            snap: { innerHTML: 1 },
+                            ease: "power2.out"
+                        });
+                    });
+                    countersAnimated = true;
+                }
+            }
+        });
+
+        // Chart Bars Animation
+        gsap.to(".chart-bar", {
+            scrollTrigger: {
+                trigger: ".chart-bar",
+                start: "top 85%",
+            },
+            scaleY: 1,
+            duration: 1,
+            stagger: 0.1,
+            ease: "back.out(1.7)"
+        });
+
+        // Research Cards Animation
+        gsap.from(".research-card", {
+            scrollTrigger: {
+                trigger: "#research",
+                start: "top 70%",
+            },
+            x: -30,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: "power3.out"
+        });
+
+        // Feature Cards Animation
+        gsap.from(".feature-card", {
+            scrollTrigger: {
+                trigger: "#features",
+                start: "top 70%",
+            },
+            scale: 0.9,
+            opacity: 0,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "back.out(1.5)"
+        });
+
+        // --- Chatbot Logic ---
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        // Simple mock responses based on keywords
+        const mockResponses = [
+            { keywords: ['how', 'work', 'platform'], response: "CuriosityOS tracks how you explore topics, the questions you ask, and how deep you go into a subject. It uses this to calculate a 'Curiosity Score' and adapt learning materials to your interests." },
+            { keywords: ['research', 'study'], response: "The Curiosity Driven Learning Intervention Study is currently analyzing data from primary schools to see if curiosity-based learning improves long-term retention compared to rote memorization." },
+            { keywords: ['prosun', 'founder', 'datta'], response: "Prosun Kanti Datta is the founder of the CuriosityOS Foundation, based in Sylhet, Bangladesh. He initiated this project to rebuild education through curiosity." },
+            { keywords: ['hello', 'hi', 'hey'], response: "Hello! I'm ready to help you explore. What topic are you curious about today?" },
+            { keywords: ['default'], response: "That's an interesting question! To understand that better, what do you already know about the topic, and what specific part makes you curious?" }
+        ];
+
+        function addMessage(text, isUser) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `flex gap-3 max-w-[85%] ${isUser ? 'self-end flex-row-reverse' : ''}`;
+            
+            const iconHtml = isUser 
+                ? `<div class="w-8 h-8 rounded-full bg-curiosityOrange/20 flex-shrink-0 flex items-center justify-center border border-curiosityOrange/50 mt-1"><i data-lucide="user" class="text-curiosityOrange w-4 h-4"></i></div>`
+                : `<div class="w-8 h-8 rounded-full bg-cyanGlow/20 flex-shrink-0 flex items-center justify-center border border-cyanGlow/50 mt-1"><i data-lucide="cpu" class="text-cyanGlow w-4 h-4"></i></div>`;
+            
+            const bubbleClass = isUser
+                ? `bg-curiosityOrange/20 border border-curiosityOrange/30 rounded-2xl rounded-tr-none p-3 text-sm text-white`
+                : `bg-white/5 border border-white/10 rounded-2xl rounded-tl-none p-3 text-sm text-gray-200`;
+
+            msgDiv.innerHTML = `
+                ${iconHtml}
+                <div class="${bubbleClass}">${text}</div>
+            `;
+            
+            chatMessages.appendChild(msgDiv);
+            lucide.createIcons({ root: msgDiv });
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function getBotResponse(input) {
+            const lowerInput = input.toLowerCase();
+            for (let i = 0; i < mockResponses.length - 1; i++) {
+                if (mockResponses[i].keywords.some(kw => lowerInput.includes(kw))) {
+                    return mockResponses[i].response;
+                }
+            }
+            return mockResponses[mockResponses.length - 1].response;
+        }
+        // This tells the website to wait for the backpack to save the message
+chatForm.addEventListener('submit', async (e) => { 
+    e.preventDefault();
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    // Show your message on the screen
+    addMessage(text, true);
+    
+    // --- SAVING TO BACKPACK ---
+    try {
+        await pb.collection('chat_logs').create({
+            user_query: text
+        });
+    } catch(err) {
+        console.log("Could not save to the backpack!");
+    }
+    // --------------------------
+
+    chatInput.value = '';
+
+    // The AI takes a second to think, then answers
+    setTimeout(() => {
+        const response = getBotResponse(text);
+        addMessage(response, false);
+    }, 1000 + Math.random() * 1000);
+});
+
+        // --- Mobile Menu Logic ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        let isMenuOpen = false;
+
+        function toggleMenu() {
+            isMenuOpen = !isMenuOpen;
+            if (isMenuOpen) {
+                mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
+                mobileMenu.classList.add('opacity-100', 'pointer-events-auto');
+                document.body.style.overflow = 'hidden';
+                mobileMenuBtn.innerHTML = '<i data-lucide="x" class="w-6 h-6"></i>';
+            } else {
+                mobileMenu.classList.add('opacity-0', 'pointer-events-none');
+                mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
+                document.body.style.overflow = '';
+                mobileMenuBtn.innerHTML = '<i data-lucide="menu" class="w-6 h-6"></i>';
+            }
+            lucide.createIcons();
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMenu);
+        
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if(isMenuOpen) toggleMenu();
+            });
+        });
+
+    </script>
+</body>
+</html>
+

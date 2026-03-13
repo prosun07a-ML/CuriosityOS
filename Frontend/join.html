@@ -1,0 +1,13 @@
+async function submitJoinBeta(event) {
+  event.preventDefault();
+  
+  const data = {
+    "Name": document.getElementById('userName').value,
+    "Email": document.getElementById('userEmail').value,
+    "School": document.getElementById('userSchool').value
+  };
+
+  // This sends the data directly to your 'Students' collection
+  await pb.collection('Students').create(data);
+  alert("Welcome to CuriosityOS!");
+}

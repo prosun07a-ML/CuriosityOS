@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CuriosityOS | Authentication</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/pocketbase/dist/pocketbase.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyanGlow: '#22d3ee',
+                        scienceBlue: '#020617',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: #020617; 
+            color: white; 
+            background-image: radial-gradient(circle at 50% 0%, #0f172a 0%, transparent 70%);
+        }
+        .glass-panel { 
+            background: rgba(15, 23, 42, 0.7); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(12px);
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(34, 211, 238, 0.2); border-radius: 10px; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+
+    <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-cyanGlow/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+    <main class="glass-panel w-full max-w-2xl rounded-3xl relative overflow-hidden flex flex-col max-h-[90vh]">
+        
+        <div class="p-8 pb-4 text-center z-10 border-b border-white/5 bg-slate-900/50">
+            <div class="flex items-center justify-center gap-2 text-cyanGlow font-bold text-3xl tracking-tight mb-6">
+                <i data-lucide="atom" class="w-8 h-8"></i> CuriosityOS
+            </div>
+            
+            <div class="inline-flex bg-black/40 rounded-xl p-1 relative">
+                <div id="active-pill" class="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-slate-800 rounded-lg transition-all duration-300 ease-out"></div>
+                <button onclick="switchView('login')" id="btn-login" class="px-8 py-2 text-sm font-bold relative z-10 text-white transition-colors">Sign In</button>
+                <button onclick="switchView('register')" id="btn-register" class="px-8 py-2 text-sm font-bold relative z-10 text-gray-500 hover:text-white transition-colors">Sign Up</button>
+            </div>
+        </div>
+
+        <div class="p-8 overflow-y-auto relative h-full">
+            
+            <div id="login-view" class="flex flex-col justify-center">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold mb-2">Welcome Back</h2>
+                    <p class="text-sm text-gray-400">Log in to continue your journey.</p>
+                </div>
+
+                <form id="login-form" class="space-y-5 max-w-sm mx-auto w-full">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Email / Username</label>
+                        <input type="text" id="log-identity" required placeholder="Email or Username" class="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Password</label>
+                        <input type="password" id="log-password" required placeholder="••••••••" class="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow transition-colors">
+                    </div>
+                    <button type="submit" id="login-btn" class="w-full bg-cyanGlow text-scienceBlue font-bold py-3 rounded-xl hover:scale-[1.02] transition-transform">Sign In</button>
+                </form>
+            </div>
+
+            <div id="register-view" class="hidden opacity-0">
+                <form id="register-form" class="space-y-4">
+                    <div class="flex flex-col items-center mb-6">
+                        <label class="cursor-pointer group relative flex flex-col items-center">
+                            <div class="w-20 h-20 rounded-full border-2 border-dashed border-cyanGlow/40 flex items-center justify-center overflow-hidden bg-black/20 mb-2">
+                                <img id="reg-avatar-preview" class="w-full h-full object-cover hidden">
+                                <i data-lucide="camera" class="text-cyanGlow/50 group-hover:text-cyanGlow w-6 h-6"></i>
+                            </div>
+                            <span class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Upload Profile Picture</span>
+                            <input type="file" id="reg-avatar" accept="image/*" class="hidden">
+                        </label>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="reg-name" required placeholder="Full Name" class="bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                        <input type="text" id="reg-username" required placeholder="Username" class="bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex flex-col">
+                            <label class="text-[10px] text-gray-500 uppercase ml-1 mb-1">Date of Birth</label>
+                            <input type="date" id="reg-dob" required class="bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm [color-scheme:dark]">
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="text-[10px] text-gray-500 uppercase ml-1 mb-1">Contact Number</label>
+                            <input type="tel" id="reg-contact" required placeholder="Contact Number" class="bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="reg-class" required placeholder="Class / Std." class="bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                        <input type="text" id="reg-institution" required placeholder="Institution Name" class="bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                    </div>
+
+                    <textarea id="reg-address" required placeholder="Address" class="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-white h-20 outline-none focus:border-cyanGlow text-sm resize-none"></textarea>
+                    
+                    <input type="email" id="reg-email" required placeholder="Email Address" class="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="password" id="reg-password" required placeholder="Password" class="bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                        <input type="password" id="reg-password-confirm" required placeholder="Confirm Password" class="bg-black/40 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                    </div>
+
+                    <button type="submit" id="reg-btn" class="w-full bg-cyanGlow text-scienceBlue font-bold py-4 rounded-xl hover:scale-[1.02] transition-all">Create Account</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        const pb = new PocketBase('http://127.0.0.1:8090');
+
+        function switchView(view) {
+            const pill = document.getElementById('active-pill');
+            const vLogin = document.getElementById('login-view');
+            const vReg = document.getElementById('register-view');
+
+            if (view === 'register') {
+                gsap.to(pill, { x: "100%", duration: 0.3 });
+                vLogin.classList.add('hidden');
+                vReg.classList.remove('hidden');
+                gsap.to(vReg, { opacity: 1, duration: 0.3 });
+            } else {
+                gsap.to(pill, { x: "0%", duration: 0.3 });
+                vReg.classList.add('hidden');
+                vLogin.classList.remove('hidden');
+                gsap.to(vLogin, { opacity: 1, duration: 0.3 });
+            }
+        }
+
+        document.getElementById('reg-avatar').onchange = (e) => {
+            const [file] = e.target.files;
+            if (file) {
+                const preview = document.getElementById('reg-avatar-preview');
+                preview.src = URL.createObjectURL(file);
+                preview.classList.remove('hidden');
+            }
+        };
+
+        // Login Logic
+        document.getElementById('login-form').onsubmit = async (e) => {
+            e.preventDefault();
+            try {
+                await pb.collection('users').authWithPassword(
+                    document.getElementById('log-identity').value, 
+                    document.getElementById('log-password').value
+                );
+                window.location.href = "index.html";
+            } catch (err) { alert("Invalid credentials"); }
+        };
+
+        // Register Logic
+        document.getElementById('register-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const pass = document.getElementById('reg-password').value;
+            if (pass !== document.getElementById('reg-password-confirm').value) return alert("Passwords mismatch");
+
+            const formData = new FormData();
+            formData.append('username', document.getElementById('reg-username').value);
+            formData.append('email', document.getElementById('reg-email').value);
+            formData.append('password', pass);
+            formData.append('passwordConfirm', pass);
+            formData.append('name', document.getElementById('reg-name').value);
+            formData.append('dob', document.getElementById('reg-dob').value);
+            formData.append('contact', document.getElementById('reg-contact').value);
+            formData.append('class', document.getElementById('reg-class').value);
+            formData.append('institution', document.getElementById('reg-institution').value);
+            formData.append('address', document.getElementById('reg-address').value);
+            
+            const avatar = document.getElementById('reg-avatar').files[0];
+            if (avatar) formData.append('avatar', avatar);
+
+            try {
+                await pb.collection('users').create(formData);
+                await pb.collection('users').authWithPassword(document.getElementById('reg-email').value, pass);
+                window.location.href = "dashboard.html";
+            } catch (err) { alert("Error: " + err.message); }
+        };
+    </script>
+</body>
+</html>

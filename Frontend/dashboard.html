@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CuriosityOS | Dashboard</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/pocketbase/dist/pocketbase.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyanGlow: '#22d3ee',
+                        scienceBlue: '#020617',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #020617; color: white; }
+        .glass-panel { 
+            background: rgba(15, 23, 42, 0.6); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-cyanGlow selection:text-scienceBlue p-4 md:p-8">
+
+    <nav class="flex justify-between items-center mb-12 max-w-7xl mx-auto">
+        <div class="flex items-center gap-2 text-cyanGlow font-bold text-2xl tracking-tight">
+            <i data-lucide="atom"></i> CuriosityOS
+        </div>
+        <div class="flex gap-6 text-sm font-medium text-gray-300 items-center">
+            <a href="index.html" class="hover:text-cyanGlow transition-colors">HOME</a>
+            <button onclick="logout()" class="px-4 py-2 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-all">Logout</button>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto">
+        <div class="mb-10">
+            <h1 class="text-4xl font-bold mb-2">Student Performance Platform</h1>
+            <p class="text-gray-400">Welcome back! Please update your latest academic telemetry below.</p>
+        </div>
+
+        <div class="glass-panel p-6 rounded-2xl mb-8 opacity-0" id="form-container">
+            <h3 class="text-cyanGlow font-bold mb-4 uppercase tracking-widest text-xs">Student Information & Progress</h3>
+            <form id="dailyForm" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                <div class="flex flex-col gap-2">
+                    <label class="text-[10px] text-gray-500 uppercase font-bold">Full Name</label>
+                    <input type="text" id="nameIn" placeholder="Enter Name" required class="bg-black/40 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow transition-colors">
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label class="text-[10px] text-gray-500 uppercase font-bold">Class/Grade</label>
+                    <input type="text" id="classIn" placeholder="Class" required class="bg-black/40 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow transition-colors">
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label class="text-[10px] text-gray-500 uppercase font-bold">Study Hours</label>
+                    <input type="number" id="studyIn" placeholder="0" required class="bg-black/40 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow transition-colors">
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label class="text-[10px] text-gray-500 uppercase font-bold">Curiosity Index</label>
+                    <input type="number" id="scoreIn" placeholder="0-100" required class="bg-black/40 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow transition-colors">
+                </div>
+                <button type="submit" id="saveBtn" class="bg-cyanGlow text-scienceBlue font-bold py-3 rounded-lg hover:brightness-110 transition-all h-[50px]">
+                    Update Stats
+                </button>
+            </form>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="space-y-6">
+                <div class="glass-panel p-6 rounded-2xl opacity-0 stat-card border-l-4 border-l-cyanGlow">
+                    <h3 class="text-xs font-bold text-gray-400 tracking-wider uppercase mb-1">Active Profile</h3>
+                    <div class="text-2xl font-bold" id="user-name-display">Guest Student</div>
+                    <div class="text-sm text-cyanGlow" id="user-class-display">Class Not Set</div>
+                    <button onclick="toggleModal()" class="mt-4 flex items-center gap-2 text-[10px] font-bold text-cyanGlow border border-cyanGlow/30 px-3 py-2 rounded-lg hover:bg-cyanGlow/10 transition-all uppercase tracking-widest">
+                        <i data-lucide="edit-3" class="w-3 h-3"></i>
+                        Edit Profile
+                    </button>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl opacity-0 stat-card">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xs font-bold text-gray-400 tracking-wider uppercase">Current Score</h3>
+                        <i data-lucide="trending-up" class="text-cyanGlow w-5 h-5"></i>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-5xl font-bold text-white" id="score-display">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 glass-panel p-6 rounded-2xl opacity-0" id="chart-container">
+                <h3 class="font-bold text-lg mb-6">Performance Trend</h3>
+                <div class="w-full h-64">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div id="profileModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 rounded-3xl border border-white/10">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-cyanGlow">Edit Profile</h2>
+            <button onclick="toggleModal()" class="text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
+        </div>
+
+        <form id="profileForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="md:col-span-2 flex flex-col items-center mb-4">
+                <label class="cursor-pointer group relative">
+                    <div class="w-24 h-24 rounded-full border-2 border-dashed border-cyanGlow/50 flex items-center justify-center overflow-hidden">
+                        <img id="avatarPreview" src="https://via.placeholder.com/150" class="w-full h-full object-cover hidden">
+                        <i data-lucide="camera" class="text-cyanGlow group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <input type="file" id="avatarIn" class="hidden" accept="image/*">
+                </label>
+                <span class="text-[10px] text-gray-500 mt-2 uppercase">Upload Profile Picture</span>
+            </div>
+
+            <input type="text" id="profName" placeholder="Full Name" class="bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow">
+            <input type="text" id="profClass" placeholder="Class / Standard" class="bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow">
+            <input type="text" id="profInst" placeholder="Institution Name" class="bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow">
+            <input type="text" id="profRole" placeholder="Role" class="bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow">
+            <textarea id="profBio" placeholder="Short Bio" class="md:col-span-2 bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white h-24 outline-none focus:border-cyanGlow"></textarea>
+
+            <div class="md:col-span-2 border-t border-white/5 pt-4">
+                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Social Connections</h3>
+            </div>
+            <input type="url" id="fbLink" placeholder="Facebook URL" class="bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow">
+            <input type="url" id="instaLink" placeholder="Instagram URL" class="bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow">
+            <input type="url" id="liLink" placeholder="LinkedIn URL" class="bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow">
+            <input type="url" id="ghLink" placeholder="GitHub URL" class="bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow">
+
+            <button type="submit" class="md:col-span-2 bg-cyanGlow text-scienceBlue font-bold py-3 rounded-xl hover:scale-[1.02] transition-transform">Save Profile</button>
+        </form>
+    </div>
+</div>
+
+    <script>
+        lucide.createIcons();
+        const pb = new PocketBase('http://127.0.0.1:8090');
+
+        if (!pb.authStore.isValid) { window.location.href = "auth.html"; }
+        function logout() { pb.authStore.clear(); window.location.href = "auth.html"; }
+
+        // Animations
+        gsap.to("#form-container", { opacity: 1, y: 0, duration: 0.8 });
+        gsap.to(".stat-card", { opacity: 1, y: 0, duration: 0.8, stagger: 0.2 });
+        gsap.to("#chart-container", { opacity: 1, duration: 1, delay: 0.4 });
+
+        // Save Data Logic
+        document.getElementById('dailyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveBtn');
+            btn.innerText = "Syncing...";
+            
+            const data = {
+                "name": document.getElementById('nameIn').value,
+                "class": document.getElementById('classIn').value,
+                "curiosity_score": document.getElementById('scoreIn').value,
+                "learning_hours": document.getElementById('studyIn').value,
+            };
+
+            try {
+                await pb.collection('students_analytics').create(data);
+                btn.innerText = "Data Synced!";
+                setTimeout(() => location.reload(), 800);
+            } catch (err) { 
+                alert("Upload failed. Check if your PocketBase collection has 'name' and 'class' fields!"); 
+                btn.innerText = "Update Stats";
+            }
+        });
+
+        // Load Data Logic
+        async function loadDashboard() {
+            try {
+                const records = await pb.collection('students_analytics').getList(1, 7, { sort: '-created' });
+                
+                if (records.items.length > 0) {
+                    const latest = records.items[0];
+                    document.getElementById('user-name-display').innerText = latest.name || "Student";
+                    document.getElementById('user-class-display').innerText = "Class: " + (latest.class || "N/A");
+                    
+                    gsap.to("#score-display", { innerHTML: latest.curiosity_score, duration: 1.5, snap: { innerHTML: 1 } });
+
+                    // Build Chart
+                    const scores = records.items.map(r => r.curiosity_score).reverse();
+                    const labels = records.items.map(r => new Date(r.created).toLocaleDateString('en-US', {weekday: 'short'})).reverse();
+
+                    new Chart(document.getElementById('growthChart'), {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: scores,
+                                borderColor: '#22d3ee',
+                                backgroundColor: 'rgba(34, 211, 238, 0.1)',
+                                tension: 0.4,
+                                fill: true,
+                                pointRadius: 5
+                            }]
+                        },
+                        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+                    });
+                }
+            } catch (err) { console.log("First time? Add some data!"); }
+        }
+        loadDashboard();
+        // --- PROFILE EDIT LOGIC START ---
+        function toggleModal() {
+            document.getElementById('profileModal').classList.toggle('hidden');
+        }
+
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = pb.authStore.model;
+            const formData = new FormData();
+            
+            // Map HTML inputs to your PocketBase users collection fields
+            const fields = {
+                'name': 'profName', 
+                'class': 'profClass', 
+                'institution': 'profInst',
+                'role': 'profRole', 
+                'bio': 'profBio', 
+                'fb_link': 'fbLink',
+                'insta_link': 'instaLink', 
+                'linkedin_link': 'liLink', 
+                'github_link': 'ghLink'
+            };
+
+            for (const [pbField, htmlId] of Object.entries(fields)) {
+                formData.append(pbField, document.getElementById(htmlId).value);
+            }
+
+            const fileInput = document.getElementById('avatarIn');
+            if (fileInput.files[0]) formData.append('avatar', fileInput.files[0]);
+
+            try {
+                await pb.collection('users').update(user.id, formData);
+                alert("Profile Updated! ✨");
+                location.reload();
+            } catch (err) {
+                alert("Update failed: " + err.message);
+            }
+        });
+
+        // Image Preview Logic
+        document.getElementById('avatarIn').onchange = () => {
+            const [file] = document.getElementById('avatarIn').files;
+            if (file) {
+                const preview = document.getElementById('avatarPreview');
+                preview.src = URL.createObjectURL(file);
+                preview.classList.remove('hidden');
+            }
+        }
+        // --- PROFILE EDIT LOGIC END ---
+    </script>
+</body>
+</html>
