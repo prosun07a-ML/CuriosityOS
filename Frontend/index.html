@@ -269,6 +269,75 @@
             </div>
         </section>
 
+
+
+
+        <section id="faq" class="relative py-24 z-10">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">
+                Frequently Asked <span class="text-cyanGlow">Questions</span>
+            </h2>
+            <div class="w-24 h-1 bg-cyanGlow mx-auto rounded-full"></div>
+        </div>
+
+        <div class="space-y-4">
+            <div class="faq-item glass-panel rounded-2xl border border-white/5 overflow-hidden transition-all duration-300">
+                <button class="faq-trigger w-full flex justify-between items-center p-6 text-left hover:bg-white/5">
+                    <span class="font-bold text-lg text-white">What is CuriosityOS?</span>
+                    <i data-lucide="chevron-down" class="text-cyanGlow transition-transform duration-300"></i>
+                </button>
+                <div class="faq-content max-h-0 opacity-0 overflow-hidden px-6 pb-6 text-gray-400 leading-relaxed">
+                    <p>CuriosityOS is an educational initiative that studies how curiosity influences learning and cognitive development in students.
+The organization designs curiosity-driven learning frameworks and tests them through real-world educational research projects with students.
+
+The goal is to understand how structured curiosity can improve critical thinking, engagement, and long-term learning outcomes.</p>
+                </div>
+            </div>
+
+            <div class="faq-item glass-panel rounded-2xl border border-white/5 overflow-hidden transition-all duration-300">
+                <button class="faq-trigger w-full flex justify-between items-center p-6 text-left hover:bg-white/5">
+                    <span class="font-bold text-lg text-white">Why does CuriosityOS focus on curiosity?</span>
+                    <i data-lucide="chevron-down" class="text-cyanGlow transition-transform duration-300"></i>
+                </button>
+                <div class="faq-content max-h-0 opacity-0 overflow-hidden px-6 pb-6 text-gray-400 leading-relaxed">
+                    <p>Curiosity is one of the strongest drivers of human learning. Throughout history, major scientific discoveries were driven by individuals who asked questions about the world around them.
+
+However, many modern education systems prioritize memorization rather than exploration. CuriosityOS investigates how structured curiosity-based activities can help students become more engaged, independent learners.
+
+Figures such as Albert Einstein and Isaac Newton are often cited as examples of how curiosity fuels discovery and innovation.</p>
+                </div>
+            </div>
+
+            <div class="faq-item glass-panel rounded-2xl border border-white/5 overflow-hidden transition-all duration-300">
+                <button class="faq-trigger w-full flex justify-between items-center p-6 text-left hover:bg-white/5">
+                    <span class="font-bold text-lg text-white">What does CuriosityOS actually do?</span>
+                    <i data-lucide="chevron-down" class="text-cyanGlow transition-transform duration-300"></i>
+                </button>
+                <div class="faq-content max-h-0 opacity-0 overflow-hidden px-6 pb-6 text-gray-400 leading-relaxed">
+                    <p>CuriosityOS supports curiosity-driven learning through research, student-led projects, and academic exploration.
+
+We conduct educational research and real-world projects with curious students, helping them turn their ideas into experiments, investigations, and learning initiatives.
+
+We also support students who want to explore subjects beyond the traditional school syllabus, including areas like coding, astronomy, aerodynamics, artificial intelligence, and quantum physics. Our goal is to encourage deeper questioning, exploration, and independent learning.</p>
+                </div>
+            </div>
+
+            <div class="faq-item glass-panel rounded-2xl border border-white/5 overflow-hidden transition-all duration-300">
+                <button class="faq-trigger w-full flex justify-between items-center p-6 text-left hover:bg-white/5">
+                    <span class="font-bold text-lg text-white">What is the long-term vision of CuriosityOS?</span>
+                    <i data-lucide="chevron-down" class="text-cyanGlow transition-transform duration-300"></i>
+                </button>
+                <div class="faq-content max-h-0 opacity-0 overflow-hidden px-6 pb-6 text-gray-400 leading-relaxed">
+                    <p></p>The long-term vision of CuriosityOS is to create a global ecosystem where curiosity becomes a central pillar of education.
+
+By combining research, technology, projects and community collaboration, CuriosityOS aims to develop scalable systems that encourage inquiry, exploration, and lifelong learning.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
         <!-- 4. STUDENT PERFORMANCE PLATFORM & 5. CURIOSITY ANALYTICS -->
         <section id="platform" class="py-24 relative z-10 bg-scienceBlue/20 border-y border-white/5">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1045,6 +1114,34 @@ chatForm.addEventListener('submit', async (e) => {
             });
         });
 
+        // FAQ Accordion Animation Logic
+document.querySelectorAll('.faq-trigger').forEach(trigger => {
+    trigger.addEventListener('click', () => {
+        const content = trigger.nextElementSibling;
+        const icon = trigger.querySelector('[data-lucide]');
+        const isOpen = content.classList.contains('is-open');
+
+        // Close other open questions
+        document.querySelectorAll('.faq-content.is-open').forEach(openContent => {
+            if (openContent !== content) {
+                gsap.to(openContent, { maxHeight: 0, opacity: 0, duration: 0.4, ease: "power2.inOut" });
+                gsap.to(openContent.previousElementSibling.querySelector('[data-lucide]'), { rotation: 0 });
+                openContent.classList.remove('is-open');
+            }
+        });
+
+        // Toggle current question
+        if (!isOpen) {
+            gsap.to(content, { maxHeight: 500, opacity: 1, duration: 0.5, ease: "power2.out" });
+            gsap.to(icon, { rotation: 180, duration: 0.3 });
+            content.classList.add('is-open');
+        } else {
+            gsap.to(content, { maxHeight: 0, opacity: 0, duration: 0.4, ease: "power2.inOut" });
+            gsap.to(icon, { rotation: 0, duration: 0.3 });
+            content.classList.remove('is-open');
+        }
+    });
+});
     </script>
 </body>
 </html>
