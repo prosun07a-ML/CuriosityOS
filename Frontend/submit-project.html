@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initialize Project | CuriosityOS</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pocketbase/0.21.1/pocketbase.umd.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #030712; color: white; color-scheme: dark; }
+        .glass-panel { background: #0a0f1e; border: 1px solid rgba(255, 255, 255, 0.05); }
+        
+        /* Fixed Input Fields & Dropdown Visibility */
+        .input-field { 
+            width: 100%; background-color: rgba(255, 255, 255, 0.03) !important; border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 0.75rem; padding: 0.75rem 1rem; font-size: 0.875rem; color: white !important; outline: none; transition: all 0.3s ease; 
+        }
+        .input-field:focus { border-color: rgba(34, 211, 238, 0.5); }
+        
+        /* FIX: Ensure dropdown options are visible in dark mode */
+        select option { background-color: #0a0f1e; color: white; padding: 10px; }
+
+        .label-text { display: block; text-transform: uppercase; font-size: 10px; font-weight: 800; letter-spacing: 0.2em; color: #6b7280; margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body class="antialiased pb-24">
+
+    <nav class="p-8 max-w-4xl mx-auto">
+        <a href="project.html" class="text-gray-500 hover:text-cyan-400 transition-colors text-xs font-bold uppercase tracking-widest">
+            <i data-lucide="arrow-left" class="w-4 h-4 inline mb-1"></i> Back to Forge
+        </a>
+    </nav>
+
+    <main class="max-w-3xl mx-auto px-6" id="project-main">
+        <div class="mb-12">
+            <h1 class="text-4xl font-extrabold italic mb-2">Project <span class="text-cyan-400">Deployment</span></h1>
+            <p class="text-gray-500 text-xs uppercase tracking-widest font-bold">Engineering the Future of Bangladesh</p>
+        </div>
+
+        <form id="project-form" class="space-y-8">
+            <div class="glass-panel p-8 rounded-[2.5rem] space-y-6">
+                <h3 class="label-text border-b border-white/5 pb-4">1. Project Identity</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="label-text">Builder Status</label>
+                        <select id="team_type" class="input-field" onchange="toggleTeam()">
+                            <option value="individual">Solo Builder</option>
+                            <option value="team">Squad / Team</option>
+                        </select>
+                    </div>
+                    <div id="squad-box" class="hidden">
+                        <label class="label-text flex justify-between items-center">
+                            Squad Members
+                            <button type="button" onclick="addMember()" class="text-cyan-400 hover:text-white transition-colors text-[9px] font-black">+ ADD MEMBER</button>
+                        </label>
+                        <div id="members-list" class="space-y-3">
+                            <input type="text" class="member-input input-field" placeholder="Name (e.g. Dipto Singha)">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="label-text">Project Title</label>
+                    <input type="text" id="proj_title" class="input-field" placeholder="Project Name" required>
+                </div>
+            </div>
+
+            <div class="glass-panel p-8 rounded-[2.5rem] space-y-6">
+                <h3 class="label-text border-b border-white/5 pb-4">2. Core Blueprint</h3>
+                <div>
+                    <label class="label-text">Executive Summary</label>
+                    <textarea id="exec_summary" rows="4" class="input-field resize-none" placeholder="The 'No-Nonsense' pitch..."></textarea>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="label-text">Budget (BDT)</label>
+                        <input type="text" id="budget" class="input-field" placeholder="e.g. 50,000">
+                    </div>
+                    <div>
+                        <label class="label-text">Timeline</label>
+                        <input type="text" id="timeline" class="input-field" placeholder="e.g. 6 Months">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end">
+                <button type="submit" id="deploy-btn" class="bg-cyan-500 text-[#030712] px-12 py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:shadow-cyan-500/20 shadow-lg">Initialize Deployment</button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        const pb = new PocketBase('http://127.0.0.1:8090');
+        lucide.createIcons();
+        gsap.from("#project-main", { y: 20, opacity: 0, duration: 1 });
+
+        function toggleTeam() {
+            const isTeam = document.getElementById('team_type').value === 'team';
+            const box = document.getElementById('squad-box');
+            if(isTeam) { box.classList.remove('hidden'); gsap.from(box, { height: 0, opacity: 0, duration: 0.4 }); }
+            else { box.classList.add('hidden'); }
+        }
+
+        function addMember() {
+            const list = document.getElementById('members-list');
+            const div = document.createElement('div');
+            div.className = "relative group opacity-0";
+            div.innerHTML = `<input type="text" class="member-input input-field pr-10" placeholder="Next Member Name"><button type="button" onclick="this.parentElement.remove()" class="absolute right-3 top-1/2 -translate-y-1/2 text-red-400 opacity-0 group-hover:opacity-100 transition-all"><i data-lucide="x" class="w-4 h-4"></i></button>`;
+            list.appendChild(div);
+            lucide.createIcons();
+            gsap.to(div, { opacity: 1, duration: 0.3 });
+        }
+
+        document.getElementById('project-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('deploy-btn'); btn.innerText = "INITIALIZING...";
+            const members = Array.from(document.querySelectorAll('.member-input')).map(i => i.value).filter(v => v !== "");
+            
+            const data = {
+                owner: pb.authStore.model.id,
+                proj_title: document.getElementById('proj_title').value,
+                team_type: document.getElementById('team_type').value,
+                team_members: members.join(", "),
+                exec_summary: document.getElementById('exec_summary').value,
+                budget: document.getElementById('budget').value,
+                timeline: document.getElementById('timeline').value
+            };
+
+            try { await pb.collection('projects').create(data); window.location.href = 'project.html'; } 
+            catch (err) { alert(err.message); btn.innerText = "Initialize Deployment"; }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile | CuriosityOS</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pocketbase/0.21.1/pocketbase.umd.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #030712; 
+            color: #f3f4f6;
+            background-image: radial-gradient(circle at 2px 2px, rgba(34, 211, 238, 0.03) 1px, transparent 0);
+            background-size: 30px 30px;
+        }
+
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+        }
+
+        .input-field {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            @apply w-full px-4 py-3 rounded-2xl outline-none focus:border-cyan-400/50 transition-all text-sm text-white;
+        }
+
+        .sidebar-link {
+            @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all;
+        }
+        .sidebar-link.active {
+            @apply bg-cyan-400/10 text-cyan-400 border border-cyan-400/20;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-[#030712]/80 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-8 h-20 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3 italic font-bold text-xl">
+                CURIOSITY<span class="text-cyan-400">OS</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <span id="save-msg" class="text-[10px] font-bold text-cyan-400 opacity-0 italic uppercase">Sync Complete</span>
+                <button type="submit" form="profile-form" id="save-btn" class="bg-cyan-400 text-slate-950 px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-32 pb-24 px-8 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
+        
+        <aside class="lg:col-span-3 space-y-2">
+            <a href="#" class="sidebar-link active"><i data-lucide="user" class="w-4 h-4"></i> Public Profile</a>
+        </aside>
+
+        <div class="lg:col-span-9">
+            <form id="profile-form" class="space-y-8">
+                
+                <div class="glass-panel p-8 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-8">
+                    <div class="relative group">
+                        <img id="avatar-preview" src="https://api.dicebear.com/7.x/avataaars/svg?seed=User" class="w-32 h-32 rounded-3xl object-cover border-2 border-white/5">
+                        <label class="absolute inset-0 flex items-center justify-center bg-black/60 rounded-3xl opacity-0 group-hover:opacity-100 cursor-pointer transition-all">
+                            <i data-lucide="camera" class="w-6 h-6"></i>
+                            <input type="file" id="avatar-input" class="hidden" accept="image/*" onchange="previewImage(event)">
+                        </label>
+                    </div>
+                    <div class="text-center md:text-left">
+                        <h2 class="text-2xl font-bold" id="header-name">Researcher Name</h2>
+                        <p class="text-cyan-400 text-xs font-bold uppercase tracking-widest mt-1" id="header-username">@identity</p>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-10 rounded-[2.5rem] space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Official Name</label>
+                            <input type="text" id="name" class="input-field">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Username</label>
+                            <input type="text" id="username" class="input-field">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Skills</label>
+                            <input type="text" id="skills" class="input-field">
+                        </div>
+                        <div class="md:col-span-2 space-y-2">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Professional Tagline</label>
+                            <input type="text" id="tagline" class="input-field" placeholder="e.g. Lead System Architect">
+                        </div>
+                        <div class="md:col-span-2 space-y-2">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Bio / Research Background</label>
+                            <textarea id="bio" rows="4" class="input-field resize-none"></textarea>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Email</label>
+                            <input type="text" id="email" class="input-field">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Date of Birth</label>
+                            <input type="text" id="dob" class="input-field">
+                        </div>
+                        <div class="md:col-span-2 space-y-2">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Address</label>
+                            <input type="text" id="address" class="input-field" placeholder="">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Institution</label>
+                            <input type="text" id="institution" class="input-field">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-10 rounded-[2.5rem] space-y-6">
+                    <h3 class="text-sm font-bold text-white mb-4">Network Links</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="relative">
+                            <i data-lucide="github" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                            <input type="url" id="github_link" class="input-field pl-12" placeholder="GitHub URL">
+                        </div>
+                        <div class="relative">
+                            <i data-lucide="linkedin" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                            <input type="url" id="linkedin_link" class="input-field pl-12" placeholder="LinkedIn URL">
+                        </div>
+                        <div class="relative">
+                            <i data-lucide="facebook" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                            <input type="url" id="facebook_link" class="input-field pl-12" placeholder="Facebook URL">
+                        </div>
+                        <div class="relative">
+                            <i data-lucide="instagram" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                            <input type="url" id="instagram_link" class="input-field pl-12" placeholder="Instagram URL">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const pb = new PocketBase('http://127.0.0.1:8090');
+        pb.autoCancellation(false);
+
+        async function init() {
+            if (!pb.authStore.isValid) { window.location.href = 'auth.html'; return; }
+            const user = pb.authStore.model;
+
+            // Fill fields
+            const fields = ['name', 'username', 'tagline', 'bio', 'github_link', 'linkedin_link'];
+            fields.forEach(f => {
+                const el = document.getElementById(f);
+                if (el) el.value = user[f] || "";
+            });
+
+            document.getElementById('header-name').innerText = user.name || "Researcher";
+            document.getElementById('header-username').innerText = `@${user.username}`;
+            
+            if (user.avatar) {
+                document.getElementById('avatar-preview').src = pb.files.getUrl(user, user.avatar);
+            }
+
+            // GSAP Animations
+            gsap.from("aside", { x: -30, opacity: 0, duration: 1, ease: "expo.out" });
+            gsap.from("#profile-form", { y: 20, opacity: 0, duration: 1, ease: "expo.out", delay: 0.2 });
+            lucide.createIcons();
+        }
+
+        function previewImage(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => document.getElementById('avatar-preview').src = ev.target.result;
+                reader.readAsDataURL(file);
+            }
+        }
+
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('save-btn');
+            const originalText = btn.innerText;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>`;
+            lucide.createIcons();
+
+            const fd = new FormData();
+            const fields = ['name', 'username', 'tagline', 'bio', 'github_link', 'linkedin_link'];
+            fields.forEach(f => fd.append(f, document.getElementById(f).value));
+
+            const av = document.getElementById('avatar-input').files[0];
+            if (av) fd.append('avatar', av);
+
+            try {
+                await pb.collection('users').update(pb.authStore.model.id, fd);
+                gsap.to("#save-msg", { opacity: 1, y: -5, duration: 0.5 });
+                setTimeout(() => window.location.reload(), 1000);
+            } catch (err) {
+                alert("Update Error: " + err.message);
+                btn.innerText = originalText;
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>

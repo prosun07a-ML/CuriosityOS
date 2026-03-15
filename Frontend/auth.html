@@ -3,226 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CuriosityOS | Authentication</title>
+    <title>CuriosityOS - Identity</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/pocketbase/dist/pocketbase.umd.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        cyanGlow: '#22d3ee',
-                        scienceBlue: '#020617',
-                    }
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: { slate: { 950: '#030712' } }
                 }
             }
         }
     </script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pocketbase/0.21.1/pocketbase.umd.js"></script>
+
     <style>
-        body { 
-            background-color: #020617; 
-            color: white; 
-            background-image: radial-gradient(circle at 50% 0%, #0f172a 0%, transparent 70%);
-            font-family: 'Inter', sans-serif;
+        body {
+            background-color: #030712;
+            background-image: radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.1) 0%, transparent 50%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            overflow-x: hidden;
         }
-        .glass-panel { 
-            background: rgba(15, 23, 42, 0.7); 
-            border: 1px solid rgba(255, 255, 255, 0.05); 
-            backdrop-filter: blur(12px);
+
+        .glass-card {
+            background: rgba(10, 15, 30, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-        /* Custom scrollbar for the form area */
-        .form-container::-webkit-scrollbar { width: 5px; }
-        .form-container::-webkit-scrollbar-track { background: transparent; }
-        .form-container::-webkit-scrollbar-thumb { background: rgba(34, 211, 238, 0.2); border-radius: 10px; }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .glass-input:focus {
+            outline: none;
+            border-color: rgba(34, 211, 238, 0.5);
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+        
+        .form-section { display: none; opacity: 0; }
+        .form-section.active { display: block; opacity: 1; }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            height: 100%;
+        }
     </style>
 </head>
-<body class="antialiased min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+<body class="antialiased selection:bg-cyan-500/30">
 
-    <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-cyanGlow/10 rounded-full blur-[100px] pointer-events-none"></div>
-
-    <main class="glass-panel w-full max-w-2xl rounded-3xl relative overflow-hidden flex flex-col shadow-2xl">
-        
-        <div class="text-center pt-10 pb-6 px-8">
-            <img src="https://i.ibb.co/pj0XT02b/image.png" 
-                 alt="CuriosityOS Logo" 
-                 class="w-16 h-16 mx-auto mb-4 object-contain brightness-110 drop-shadow-[0_0_15px_rgba(34,211,238,0.3)]">
-            <h2 class="text-3xl font-bold text-white tracking-tight">Join CuriosityOS</h2>
-            <p class="text-gray-400 mt-2 text-sm">Empowering the next generation of learners.</p>
+    <main class="w-full max-w-md p-6 relative z-10" id="main-container">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold italic tracking-tight text-white mb-2">
+                CURIOSITY<span class="text-cyan-400">OS</span>
+            </h1>
+            <p class="text-sm text-gray-400 font-medium tracking-wide uppercase">Institutional Identity Portal</p>
         </div>
 
-        <div class="flex justify-center mb-6">
-            <div class="inline-flex bg-black/40 rounded-xl p-1 relative border border-white/5">
-                <div id="active-pill" class="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-slate-800 rounded-lg shadow-lg"></div>
-                <button onclick="switchView('login')" id="btn-login" class="px-10 py-2.5 text-sm font-bold relative z-10 text-white transition-colors">Sign In</button>
-                <button onclick="switchView('register')" id="btn-register" class="px-10 py-2.5 text-sm font-bold relative z-10 text-gray-400 hover:text-white transition-colors">Sign Up</button>
-            </div>
-        </div>
-
-        <div class="form-container px-8 pb-10 overflow-y-auto max-h-[55vh]">
+        <div class="glass-card rounded-3xl p-8 relative overflow-hidden" id="auth-card">
             
-            <div id="login-view" class="flex flex-col">
-                <div class="text-center mb-8">
-                    <h3 class="text-xl font-bold text-white mb-1">Welcome Back</h3>
-                    <p class="text-xs text-gray-400">Log in to continue your journey.</p>
+            <div id="signin-section" class="form-section active">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-semibold text-white mb-1">Welcome back</h2>
+                    <p class="text-sm text-gray-400">Authenticate to access your workspace.</p>
                 </div>
 
-                <form id="login-form" class="space-y-5 max-w-sm mx-auto w-full">
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Email / Username</label>
-                        <input type="text" id="log-identity" required placeholder="Email or Username" class="w-full bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow transition-colors">
+                <form id="signin-form" class="space-y-5">
+                    <div class="space-y-1">
+                        <label class="text-xs font-medium text-gray-400 uppercase tracking-wider ml-1">Email / Username</label>
+                        <div class="relative">
+                            <i data-lucide="mail" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"></i>
+                            <input type="text" id="signin-email" required class="glass-input w-full rounded-2xl py-3 pl-12 pr-4 text-sm" placeholder="identity@institution.edu">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Password</label>
-                        <input type="password" id="log-password" required placeholder="••••••••" class="w-full bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow transition-colors">
+
+                    <div class="space-y-1">
+                        <label class="text-xs font-medium text-gray-400 uppercase tracking-wider ml-1">Passphrase</label>
+                        <div class="relative">
+                            <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"></i>
+                            <input type="password" id="signin-password" required class="glass-input w-full rounded-2xl py-3 pl-12 pr-4 text-sm" placeholder="••••••••••••">
+                        </div>
                     </div>
-                    <button type="submit" id="login-btn" class="w-full bg-cyanGlow text-scienceBlue font-bold py-3.5 rounded-xl hover:scale-[1.02] transition-transform shadow-lg shadow-cyanGlow/20 mt-4">Sign In</button>
+
+                    <div id="signin-error" class="text-red-400 text-xs font-medium hidden mt-2 flex items-center gap-1">
+                        <i data-lucide="alert-circle" class="w-3 h-3"></i>
+                        <span>Authentication failed.</span>
+                    </div>
+
+                    <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-2xl py-3.5 mt-6 transition-all flex justify-center items-center gap-2">
+                        <span>Authenticate</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
                 </form>
+
+                <div class="mt-8 text-center">
+                    <p class="text-sm text-gray-400">No identity record? <button id="btn-to-signup" class="text-cyan-400 font-medium">Establish Identity</button></p>
+                </div>
             </div>
 
-            <div id="register-view" class="hidden opacity-0">
-                <form id="register-form" class="space-y-4">
-                    <div class="flex flex-col items-center mb-6">
-                        <label class="cursor-pointer group relative flex flex-col items-center">
-                            <div class="w-20 h-20 rounded-full border-2 border-dashed border-cyanGlow/40 flex items-center justify-center overflow-hidden bg-black/20 mb-2">
-                                <img id="reg-avatar-preview" class="w-full h-full object-cover hidden">
-                                <i data-lucide="camera" class="text-cyanGlow/50 group-hover:text-cyanGlow w-6 h-6"></i>
-                            </div>
-                            <span class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Upload Profile Picture</span>
-                            <input type="file" id="reg-avatar" accept="image/*" class="hidden">
-                        </label>
-                    </div>
+            <div id="signup-section" class="form-section">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-semibold text-white mb-1">Establish Identity</h2>
+                    <p class="text-sm text-gray-400">Register your institutional profile.</p>
+                </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" id="reg-name" required placeholder="Full Name" class="bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
-                        <input type="text" id="reg-username" required placeholder="Username" class="bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="flex flex-col">
-                            <label class="text-[10px] text-gray-500 uppercase ml-1 mb-1">Date of Birth</label>
-                            <input type="date" id="reg-dob" required class="bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm [color-scheme:dark]">
+                <form id="signup-form" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-gray-400 uppercase tracking-wider ml-1">Full Name</label>
+                            <input type="text" id="signup-name" required class="glass-input w-full rounded-2xl py-3 px-4 text-sm">
                         </div>
-                        <div class="flex flex-col">
-                            <label class="text-[10px] text-gray-500 uppercase ml-1 mb-1">Contact Number</label>
-                            <input type="tel" id="reg-contact" required placeholder="Contact Number" class="bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-gray-400 uppercase tracking-wider ml-1">Username</label>
+                            <input type="text" id="signup-username" required class="glass-input w-full rounded-2xl py-3 px-4 text-sm">
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" id="reg-class" required placeholder="Class / Std." class="bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
-                        <input type="text" id="reg-institution" required placeholder="Institution Name" class="bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                    <div class="space-y-1">
+                        <label class="text-xs font-medium text-gray-400 uppercase tracking-wider ml-1">Email</label>
+                        <input type="email" id="signup-email" required class="glass-input w-full rounded-2xl py-3 px-4 text-sm">
                     </div>
 
-                    <textarea id="reg-address" required placeholder="Full Address" class="w-full bg-black/30 border border-white/10 p-3 rounded-xl text-white h-20 outline-none focus:border-cyanGlow text-sm resize-none"></textarea>
+                    <div class="space-y-1">
+                        <label class="text-xs font-medium text-gray-400 uppercase tracking-wider ml-1">Passphrase</label>
+                        <input type="password" id="signup-password" required minlength="8" class="glass-input w-full rounded-2xl py-3 px-4 text-sm">
+                    </div>
                     
-                    <input type="email" id="reg-email" required placeholder="Email Address" class="w-full bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="password" id="reg-password" required placeholder="Password" class="bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
-                        <input type="password" id="reg-password-confirm" required placeholder="Confirm Password" class="bg-black/30 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-cyanGlow text-sm">
+                    <div class="space-y-1">
+                        <label class="text-xs font-medium text-gray-400 uppercase tracking-wider ml-1">Confirm</label>
+                        <input type="password" id="signup-passwordConfirm" required minlength="8" class="glass-input w-full rounded-2xl py-3 px-4 text-sm">
                     </div>
 
-                    <button type="submit" id="reg-btn" class="w-full bg-white text-scienceBlue font-bold py-4 rounded-xl hover:scale-[1.02] transition-transform mt-4">Create Account</button>
+                    <div class="space-y-1 pt-1">
+                        <label class="text-xs font-medium text-gray-400 uppercase tracking-wider ml-1">Avatar (Optional)</label>
+                        <div class="file-input-wrapper glass-input rounded-2xl py-3 px-4 flex items-center justify-between">
+                            <span id="file-name-display" class="text-sm text-gray-400">Select image...</span>
+                            <input type="file" id="signup-avatar" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div id="signup-error" class="text-red-400 text-xs font-medium hidden mt-2 flex items-center gap-1">
+                        <i data-lucide="alert-circle" class="w-3 h-3"></i>
+                        <span id="signup-error-text">Creation failed.</span>
+                    </div>
+
+                    <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-2xl py-3.5 mt-6 transition-all flex justify-center items-center gap-2">
+                        <span>Initialize Profile</span>
+                        <i data-lucide="fingerprint" class="w-4 h-4"></i>
+                    </button>
                 </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-gray-400">Identity established? <button id="btn-to-signin" class="text-cyan-400 font-medium">Authenticate</button></p>
+                </div>
+            </div>
+            
+            <div id="loading-overlay" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center z-50 hidden opacity-0">
+                <i data-lucide="loader-2" class="w-8 h-8 text-cyan-400 animate-spin mb-4"></i>
+                <p class="text-sm font-medium text-cyan-400 tracking-widest uppercase">Processing...</p>
             </div>
         </div>
     </main>
 
     <script>
         lucide.createIcons();
-        // Replace with your actual PocketBase URL if hosted
         const pb = new PocketBase('http://127.0.0.1:8090');
+        pb.autoCancellation(false);
 
-        function switchView(view) {
-            const pill = document.getElementById('active-pill');
-            const vLogin = document.getElementById('login-view');
-            const vReg = document.getElementById('register-view');
-            const btnLogin = document.getElementById('btn-login');
-            const btnRegister = document.getElementById('btn-register');
+        const authCard = document.getElementById('auth-card');
+        const signinSection = document.getElementById('signin-section');
+        const signupSection = document.getElementById('signup-section');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const avatarInput = document.getElementById('signup-avatar');
+        const fileNameDisplay = document.getElementById('file-name-display');
 
-            if (view === 'register') {
-                gsap.to(pill, { x: "100%", duration: 0.4, ease: "power2.out" });
-                btnRegister.classList.replace('text-gray-400', 'text-white');
-                btnLogin.classList.replace('text-white', 'text-gray-400');
-                
-                gsap.to(vLogin, { opacity: 0, y: 10, duration: 0.2, onComplete: () => {
-                    vLogin.classList.add('hidden');
-                    vReg.classList.remove('hidden');
-                    gsap.fromTo(vReg, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.3 });
-                }});
+        // Initial Entry
+        gsap.from("#main-container", { y: 50, opacity: 0, duration: 1, ease: "power3.out", delay: 0.2 });
+
+        // Toggle
+        function switchForm(hide, show) {
+            gsap.to(hide, { opacity: 0, y: -10, duration: 0.3, onComplete: () => {
+                hide.classList.remove('active');
+                show.classList.add('active');
+                gsap.fromTo(show, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4 });
+            }});
+        }
+
+        document.getElementById('btn-to-signup').onclick = () => switchForm(signinSection, signupSection);
+        document.getElementById('btn-to-signin').onclick = () => switchForm(signupSection, signinSection);
+
+        avatarInput.onchange = (e) => {
+            fileNameDisplay.textContent = e.target.files.length ? e.target.files[0].name : 'Select image...';
+        };
+
+        function setLoading(isLoading) {
+            if (isLoading) {
+                loadingOverlay.classList.remove('hidden');
+                gsap.to(loadingOverlay, { opacity: 1, duration: 0.3 });
             } else {
-                gsap.to(pill, { x: 0, duration: 0.4, ease: "power2.out" });
-                btnLogin.classList.replace('text-gray-400', 'text-white');
-                btnRegister.classList.replace('text-white', 'text-gray-400');
-
-                gsap.to(vReg, { opacity: 0, y: 10, duration: 0.2, onComplete: () => {
-                    vReg.classList.add('hidden');
-                    vLogin.classList.remove('hidden');
-                    gsap.fromTo(vLogin, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.3 });
-                }});
+                gsap.to(loadingOverlay, { opacity: 0, duration: 0.3, onComplete: () => loadingOverlay.classList.add('hidden') });
             }
         }
 
-        // Avatar Preview logic
-        document.getElementById('reg-avatar').onchange = (e) => {
-            const [file] = e.target.files;
-            if (file) {
-                const preview = document.getElementById('reg-avatar-preview');
-                const icon = preview.nextElementSibling;
-                preview.src = URL.createObjectURL(file);
-                preview.classList.remove('hidden');
-                icon.classList.add('hidden');
-            }
-        };
-
-        // Login Logic
-        document.getElementById('login-form').onsubmit = async (e) => {
+        // SIGN IN
+        document.getElementById('signin-form').onsubmit = async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('login-btn');
-            btn.innerText = "Authenticating...";
+            setLoading(true);
             try {
                 await pb.collection('users').authWithPassword(
-                    document.getElementById('log-identity').value, 
-                    document.getElementById('log-password').value
+                    document.getElementById('signin-email').value, 
+                    document.getElementById('signin-password').value
                 );
-                window.location.href = "index.html";
-            } catch (err) { 
-                alert("Invalid credentials"); 
-                btn.innerText = "Sign In";
+                // REDIRECT TO HOME
+                window.location.href = 'index.html'; 
+            } catch (err) {
+                setLoading(false);
+                document.getElementById('signin-error').classList.remove('hidden');
+                gsap.fromTo(authCard, {x: -10}, {x: 10, duration: 0.1, yoyo: true, repeat: 5});
             }
         };
 
-        // Register Logic
-        document.getElementById('register-form').onsubmit = async (e) => {
+        // SIGN UP
+        document.getElementById('signup-form').onsubmit = async (e) => {
             e.preventDefault();
-            const pass = document.getElementById('reg-password').value;
-            if (pass !== document.getElementById('reg-password-confirm').value) return alert("Passwords mismatch");
+            const pass = document.getElementById('signup-password').value;
+            if (pass !== document.getElementById('signup-passwordConfirm').value) return alert("Passwords mismatch");
 
-            const formData = new FormData();
-            formData.append('username', document.getElementById('reg-username').value);
-            formData.append('email', document.getElementById('reg-email').value);
-            formData.append('password', pass);
-            formData.append('passwordConfirm', pass);
-            formData.append('name', document.getElementById('reg-name').value);
-            formData.append('dob', document.getElementById('reg-dob').value);
-            formData.append('contact', document.getElementById('reg-contact').value);
-            formData.append('class', document.getElementById('reg-class').value);
-            formData.append('institution', document.getElementById('reg-institution').value);
-            formData.append('address', document.getElementById('reg-address').value);
-            
-            const avatar = document.getElementById('reg-avatar').files[0];
-            if (avatar) formData.append('avatar', avatar);
-
+            setLoading(true);
             try {
-                await pb.collection('users').create(formData);
-                await pb.collection('users').authWithPassword(document.getElementById('reg-email').value, pass);
-                window.location.href = "dashboard.html";
-            } catch (err) { alert("Error: " + err.message); }
+                const fd = new FormData();
+                fd.append('name', document.getElementById('signup-name').value);
+                fd.append('username', document.getElementById('signup-username').value);
+                fd.append('email', document.getElementById('signup-email').value);
+                fd.append('password', pass);
+                fd.append('passwordConfirm', pass);
+                if (avatarInput.files[0]) fd.append('avatar', avatarInput.files[0]);
+
+                await pb.collection('users').create(fd);
+                await pb.collection('users').authWithPassword(document.getElementById('signup-email').value, pass);
+                
+                // REDIRECT TO HOME
+                window.location.href = 'index.html'; 
+            } catch (err) {
+                setLoading(false);
+                document.getElementById('signup-error').classList.remove('hidden');
+                document.getElementById('signup-error-text').innerText = err.message;
+            }
         };
     </script>
 </body>

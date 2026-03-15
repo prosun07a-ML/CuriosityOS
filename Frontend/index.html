@@ -167,30 +167,66 @@
                 <a href="research.html" class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">Research</a>
                 <a href="resources.html" class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">Resources</a>
                 <a href="community.html" class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">Community</a>
-                <a href="auth.html" class="px-6 py-2 rounded-full bg-cyanGlow/10 text-cyanGlow border border-cyanGlow/30 hover:bg-cyanGlow/20 transition-all duration-300 font-bold">Join Us</a>
+                
+                <div id="nav-auth-section" class="flex items-center gap-4 border-l border-white/10 pl-8">
+                    <a href="auth.html" id="nav-login-btn" class="px-6 py-2 rounded-full bg-cyanGlow text-scienceBlue font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all">
+                        Join Us
+                    </a>
+
+                    <div id="nav-user-profile" class="hidden flex items-center gap-3 group cursor-pointer relative">
+                        
+                        <div class="text-right hidden lg:block">
+                            <p id="user-name" class="text-[11px] font-bold text-white leading-none"></p>
+                        </div>
+                        
+                    <div class="w-10 h-10 rounded-full border border-cyanGlow/30 overflow-hidden group-hover:border-cyanGlow transition-colors bg-white/5">
+        <img id="user-avatar" src="" class="w-full h-full object-cover" alt="User">
+    </div>
+
+    <div class="absolute top-full right-0 mt-2 w-40 glass-panel rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 overflow-hidden border border-white/10">
+
+        <a href="edit-profile.html" class="w-full px-4 py-3 text-left text-[10px] font-bold text-cyanGlow hover:bg-cyanGlow/10 transition-colors flex items-center gap-2 uppercase border-b border-white/10">
+            <i data-lucide="user-cog" class="w-3 h-3"></i> Edit Profile
+        </a>
+
+        <button onclick="logout()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-red-400 hover:bg-red-500/10 transition-colors flex items-center gap-2 uppercase">
+            <i data-lucide="log-out" class="w-3 h-3"></i> Logout
+        </button>
+        
+    </div>
+</div> 
+
+
             </div>
 
-            <div class="md:hidden flex items-center">
-                <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+            <div class="md:hidden flex items-center gap-4">
+                <div id="mobile-user-avatar" class="hidden w-10 h-10 rounded-full border border-cyanGlow/30 overflow-hidden bg-white/5">
+                    <img id="mobile-avatar-img" src="" class="w-full h-full object-cover" alt="User">
+                </div>
+                <button id="mobile-menu-btn" class="text-gray-300 hover:text-cyanGlow transition-colors focus:outline-none">
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
             </div>
-
         </div>
     </div>
 </nav>
 
-    <!-- Mobile Menu Overlay -->
-    <div id="mobile-menu" class="fixed inset-0 z-40 bg-scienceBlue/95 backdrop-blur-xl flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="flex flex-col space-y-8 text-center">
-            <a href="about.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">About</a>
-            <a href="project.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">Project</a>
-            <a href="research.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">Research</a>
-            <a href="community.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">Community</a>
-            <a href="donate.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">Donate</a>
-            <a href="auth.html" class="mobile-link px-8 py-3 rounded-full bg-cyanGlow text-scienceBlue font-bold text-lg mt-4">Join Us</a>
+ <!-- Mobile Menu Overlay -->
+  <div id="mobile-menu" class="fixed inset-0 z-40 bg-scienceBlue/95 backdrop-blur-xl flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="flex flex-col space-y-6 text-center items-center">
+        <a href="about.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">About</a>
+        <a href="project.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">Project</a>
+        <a href="research.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">Research</a>
+        <a href="community.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">Community</a>
+        
+        <div id="mobile-auth-toggle" class="pt-4">
+            <a href="auth.html" id="mobile-login-btn" class="mobile-link px-8 py-3 rounded-full bg-cyanGlow text-scienceBlue font-bold text-lg">Join Us</a>
+            <button id="mobile-logout-btn" onclick="logout()" class="hidden px-8 py-3 rounded-full border border-red-500/50 text-red-400 font-bold text-lg flex items-center gap-2">
+                <i data-lucide="log-out" class="w-5 h-5"></i> Logout
+            </button>
         </div>
     </div>
+</div>
 
     <main>
         <!-- 2. HERO SECTION -->
@@ -203,6 +239,7 @@
                 <h1 class="font-heading text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-tight">
                     Rebuilding the Future <br />
                     Through <span class="text-gradient">Curiosity</span>
+
                 </h1>
                 <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-400 font-sans mb-10">
                     A research driven platform advancing curiosity, learning behavior, and measurable student progress.
@@ -346,9 +383,11 @@ By combining research, technology, projects and community collaboration, Curiosi
                         <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">Student Performance Platform</h2>
                         <p class="text-gray-400 max-w-2xl">Real-time telemetry of student engagement, question formulation, and exploratory behavior.</p>
                     </div>
-                    <div class="mt-6 md:mt-0 flex items-center gap-2 text-cyanGlow text-sm font-medium bg-cyanGlow/10 px-4 py-2 rounded-lg border border-cyanGlow/20">
-                        <span class="w-2 h-2 rounded-full bg-cyanGlow animate-pulse"></span> Live Dashboard Preview
-                    </div>
+                    <a href="dashboard.html" class="block no-underline">
+                        <div class="glass-card ..."> 
+                            <h3>Live Dashboard Preview</h3>
+                        </div>
+                    </a>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -1088,6 +1127,76 @@ chatForm.addEventListener('submit', async (e) => {
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         const mobileLinks = document.querySelectorAll('.mobile-link');
+        // 1. The Auth Brain
+function updateNavAuth() {
+    const userProfile = document.getElementById('nav-user-profile');
+    const loginBtn = document.getElementById('nav-login-btn');
+    const userName = document.getElementById('user-name');
+    const userAvatar = document.getElementById('user-avatar');
+
+    if (pb.authStore.isValid) {
+        const user = pb.authStore.model;
+        loginBtn?.classList.add('hidden');
+        userProfile?.classList.remove('hidden');
+        userName.textContent = user.name || user.username || "Member";
+
+        // CLEAN DEFAULT: Shows your photo OR a professional WhatsApp-style icon
+        userAvatar.src = user.avatar 
+            ? pb.files.getUrl(user, user.avatar) 
+            : "https://www.w3schools.com/howto/img_avatar.png";
+    }
+}
+
+// 2. The Modal Controls (MISSING IN YOUR SS)
+function openSettings() {
+    const user = pb.authStore.model;
+    document.getElementById('edit-name').value = user.name || "";
+    document.getElementById('edit-avatar-preview').src = user.avatar 
+        ? pb.files.getUrl(user, user.avatar) 
+        : "https://www.w3schools.com/howto/img_avatar.png";
+    
+    const modal = document.getElementById('settings-modal');
+    modal.classList.remove('hidden');
+    setTimeout(() => modal.classList.add('opacity-100'), 10);
+}
+
+function closeSettings() {
+    const modal = document.getElementById('settings-modal');
+    modal.classList.remove('opacity-100');
+    setTimeout(() => modal.classList.add('hidden'), 300);
+}
+
+// 3. Save Logic (MISSING IN YOUR SS)
+document.getElementById('edit-profile-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('save-btn');
+    btn.innerText = "Saving...";
+    
+    const formData = new FormData();
+    formData.append('name', document.getElementById('edit-name').value);
+    const file = document.getElementById('avatar-input').files[0];
+    if (file) formData.append('avatar', file);
+
+    try {
+        await pb.collection('users').update(pb.authStore.model.id, formData);
+        window.location.reload();
+    } catch (err) {
+        alert("Error: " + err.message);
+        btn.innerText = "Save Changes";
+    }
+});
+
+function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = () => document.getElementById('edit-avatar-preview').src = reader.result;
+    reader.readAsDataURL(event.target.files[0]);
+}
+
+function logout() {
+    pb.authStore.clear();
+    window.location.reload();
+}
+        
         let isMenuOpen = false;
 
         function toggleMenu() {
@@ -1142,6 +1251,31 @@ document.querySelectorAll('.faq-trigger').forEach(trigger => {
         }
     });
 });
-    </script>
+
+// 1. Define functions FIRST
+function openSettings() {
+    console.log("Button clicked!"); 
+    const modal = document.getElementById('settings-modal');
+    if (!modal) return console.error("Modal div not found! Check if the HTML is above this script.");
+    
+    const user = pb.authStore.model;
+    document.getElementById('edit-name').value = user.name || user.username || "";
+    
+    modal.classList.remove('hidden');
+    gsap.to(modal, { opacity: 1, duration: 0.4, ease: "power2.out" });
+}
+
+function closeSettings() {
+    const modal = document.getElementById('settings-modal');
+    gsap.to(modal, { 
+        opacity: 0, 
+        duration: 0.3, 
+        onComplete: () => modal.classList.add('hidden') 
+    });
+}
+
+// 2. Call the init function LAST
+updateNavAuth();
+       </script>
 </body>
 </html>

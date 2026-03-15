@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publish Intelligence | CuriosityOS</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pocketbase/0.21.1/pocketbase.umd.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #030712; color: white; color-scheme: dark; }
+        .glass-panel { background: #0a0f1e; border: 1px solid rgba(255, 255, 255, 0.05); }
+        
+        /* Fixed Input Fields & Dropdown Visibility */
+        .input-field { 
+            width: 100%; background-color: rgba(255, 255, 255, 0.03) !important; border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 0.75rem; padding: 0.75rem 1rem; font-size: 0.875rem; color: white !important; outline: none; transition: all 0.3s ease; 
+        }
+        .input-field:focus { border-color: rgba(34, 211, 238, 0.5); background-color: rgba(255, 255, 255, 0.07) !important; }
+        
+        /* Fix for invisible dropdown options */
+        select option { background-color: #0a0f1e; color: white; }
+
+        .label-text { display: block; text-transform: uppercase; font-size: 10px; font-weight: 800; letter-spacing: 0.2em; color: #6b7280; margin-bottom: 0.5rem; }
+        .file-upload-zone { @apply border-2 border-dashed border-white/5 rounded-2xl p-8 text-center hover:border-cyan-400/30 hover:bg-cyan-400/5 transition-all cursor-pointer group; }
+    </style>
+</head>
+<body class="antialiased pb-24">
+
+    <nav class="p-8 max-w-5xl mx-auto">
+        <a href="research.html" class="flex items-center gap-2 text-gray-500 hover:text-cyan-400 transition-colors text-xs font-bold uppercase tracking-widest">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Return to Lab
+        </a>
+    </nav>
+
+    <main class="max-w-3xl mx-auto px-6" id="research-main">
+        <div class="mb-12">
+            <h1 class="text-4xl font-extrabold italic mb-2">Publish <span class="text-cyan-400">Intelligence</span></h1>
+            <p class="text-gray-500 text-xs uppercase tracking-widest font-bold">Documenting Intellectual Growth</p>
+        </div>
+
+        <form id="research-form" class="space-y-10">
+            <div class="glass-panel p-8 rounded-[2.5rem] space-y-6">
+                <h3 class="label-text border-b border-white/5 pb-4">1. Authorship & Title</h3>
+                <div>
+                    <label class="label-text">Paper Title</label>
+                    <input type="text" id="title" class="input-field" placeholder="e.g. Cognitive Growth Patterns in Gen-Z" required>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="label-text">Lead Author</label>
+                        <input type="text" id="author_name" class="input-field" placeholder="Full Name">
+                    </div>
+                    <div>
+                        <label class="label-text flex justify-between items-center">
+                            Co-Authors
+                            <button type="button" onclick="addCoAuthor()" class="text-cyan-400 hover:text-white transition-colors text-[9px] font-black">+ ADD ANOTHER</button>
+                        </label>
+                        <div id="co-authors-list" class="space-y-3">
+                            <input type="text" class="input-field co-author-input" placeholder="Co-Author Name">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel p-8 rounded-[2.5rem] space-y-6">
+                <h3 class="label-text border-b border-white/5 pb-4">2. Deep Content</h3>
+                <div>
+                    <label class="label-text">Abstract / Summary</label>
+                    <textarea id="abstract" rows="3" class="input-field resize-none" placeholder="The high-level summary..."></textarea>
+                </div>
+                <div>
+                    <label class="label-text">Methodology</label>
+                    <textarea id="methodology" rows="4" class="input-field resize-none" placeholder="How was this research conducted?"></textarea>
+                </div>
+                <div>
+                    <label class="label-text">Key Results</label>
+                    <textarea id="results" rows="4" class="input-field resize-none" placeholder="Primary findings..."></textarea>
+                </div>
+                <div>
+                    <label class="label-text">Conclusion</label>
+                    <textarea id="conclusion" rows="3" class="input-field resize-none" placeholder="Final statement..."></textarea>
+                </div>
+            </div>
+
+            <div class="glass-panel p-8 rounded-[2.5rem]">
+                <label for="research-file" class="file-upload-zone block">
+                    <i data-lucide="upload-cloud" class="w-10 h-10 text-gray-600 group-hover:text-cyan-400 mx-auto mb-4"></i>
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">Upload Full Manuscript (PDF)</p>
+                    <input type="file" id="research-file" class="hidden">
+                    <div id="file-name" class="mt-4 text-[10px] text-cyan-400 hidden font-bold"></div>
+                </label>
+            </div>
+
+            <div class="flex justify-end">
+                <button type="submit" id="submit-btn" class="bg-cyan-500 text-[#030712] px-12 py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all">Commit to Library</button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        const pb = new PocketBase('http://127.0.0.1:8090');
+        lucide.createIcons();
+        gsap.from("#research-main", { y: 20, opacity: 0, duration: 1 });
+
+        function addCoAuthor() {
+            const list = document.getElementById('co-authors-list');
+            const div = document.createElement('div');
+            div.className = "relative group opacity-0";
+            div.innerHTML = `<input type="text" class="input-field co-author-input pr-10" placeholder="Next Co-Author"><button type="button" onclick="this.parentElement.remove()" class="absolute right-3 top-1/2 -translate-y-1/2 text-red-400 opacity-0 group-hover:opacity-100 transition-all"><i data-lucide="x" class="w-4 h-4"></i></button>`;
+            list.appendChild(div);
+            lucide.createIcons();
+            gsap.to(div, { opacity: 1, duration: 0.3 });
+        }
+
+        document.getElementById('research-file').onchange = function() { 
+            const d = document.getElementById('file-name'); d.innerText = this.files[0].name; d.classList.remove('hidden'); 
+        };
+
+        document.getElementById('research-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn'); btn.innerText = "UPLOADING...";
+            const coAuthors = Array.from(document.querySelectorAll('.co-author-input')).map(i => i.value).filter(v => v !== "");
+            const fd = new FormData();
+            fd.append('author', pb.authStore.model.id);
+            fd.append('author_name', document.getElementById('author_name').value);
+            fd.append('co_authors', coAuthors.join(', '));
+            fd.append('title', document.getElementById('title').value);
+            fd.append('abstract', document.getElementById('abstract').value);
+            fd.append('methodology', document.getElementById('methodology').value);
+            fd.append('results', document.getElementById('results').value);
+            fd.append('conclusion', document.getElementById('conclusion').value);
+            if(document.getElementById('research-file').files[0]) fd.append('document', document.getElementById('research-file').files[0]);
+
+            try { await pb.collection('research').create(fd); window.location.href = 'research.html'; } 
+            catch (err) { alert(err.message); btn.innerText = "Commit to Library"; }
+        };
+    </script>
+</body>
+</html>
