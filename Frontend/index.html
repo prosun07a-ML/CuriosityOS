@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-    <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.umd.js"></script>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CuriosityOS | Educational Research Platform</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -49,18 +52,21 @@
             color: #ffffff;
             overflow-x: hidden;
         }
-        
+
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
+
         ::-webkit-scrollbar-track {
             background: #040b17;
         }
+
         ::-webkit-scrollbar-thumb {
             background: #0B1E3D;
             border-radius: 4px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
             background: #00E5FF;
         }
@@ -72,7 +78,7 @@
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(0, 229, 255, 0.1);
         }
-        
+
         .glass-panel:hover {
             border-color: rgba(0, 229, 255, 0.3);
             box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
@@ -123,7 +129,7 @@
             transform-origin: bottom;
             transform: scaleY(0);
         }
-        
+
         /* Chatbot Scroll */
         #chat-messages {
             scrollbar-width: thin;
@@ -131,9 +137,10 @@
         }
     </style>
 </head>
+
 <body class="antialiased selection:bg-cyanGlow selection:text-scienceBlue">
 
-    <!-- 1. CINEMATIC ENTRANCE -->
+   <!-- 1. CINEMATIC ENTRANCE -->
     <div id="intro-overlay">
         <canvas id="intro-canvas"></canvas>
         <div class="intro-content">
@@ -148,85 +155,116 @@
 
     <!-- Main Background Canvas -->
     <canvas id="bg-canvas"></canvas>
-
+    
     <!-- Navigation -->
-   <nav class="fixed w-full z-50 glass-panel border-b-0 border-white/5 transition-all duration-300" id="navbar">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-20">
-            
-            <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
-                <img src="https://i.ibb.co.com/pj0XT02b/image.png" 
-                     alt="CuriosityOS Logo" 
-                     class="w-16 h-16 object-contain brightness-110">
-                <span class="font-heading font-bold text-2xl text-white tracking-tight">CuriosityOS</span>
-            </div>
+    <nav class="fixed w-full z-50 glass-panel border-b-0 border-white/5 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
 
-            <div class="hidden md:flex items-center space-x-8">
-                <a href="about.html" class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">About</a>
-                <a href="project.html" class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">Project</a>
-                <a href="research.html" class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">Research</a>
-                <a href="resources.html" class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">Resources</a>
-                <a href="community.html" class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">Community</a>
-                
-                <div id="nav-auth-section" class="flex items-center gap-4 border-l border-white/10 pl-8">
-                    <a href="auth.html" id="nav-login-btn" class="px-6 py-2 rounded-full bg-cyanGlow text-scienceBlue font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all">
-                        Join Us
-                    </a>
-
-                    <div id="nav-user-profile" class="hidden flex items-center gap-3 group cursor-pointer relative">
-                        
-                        <div class="text-right hidden lg:block">
-                            <p id="user-name" class="text-[11px] font-bold text-white leading-none"></p>
-                        </div>
-                        
-                    <div class="w-10 h-10 rounded-full border border-cyanGlow/30 overflow-hidden group-hover:border-cyanGlow transition-colors bg-white/5">
-        <img id="user-avatar" src="" class="w-full h-full object-cover" alt="User">
-    </div>
-
-    <div class="absolute top-full right-0 mt-2 w-40 glass-panel rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 overflow-hidden border border-white/10">
-
-        <a href="edit-profile.html" class="w-full px-4 py-3 text-left text-[10px] font-bold text-cyanGlow hover:bg-cyanGlow/10 transition-colors flex items-center gap-2 uppercase border-b border-white/10">
-            <i data-lucide="user-cog" class="w-3 h-3"></i> Edit Profile
-        </a>
-
-        <button onclick="logout()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-red-400 hover:bg-red-500/10 transition-colors flex items-center gap-2 uppercase">
-            <i data-lucide="log-out" class="w-3 h-3"></i> Logout
-        </button>
-        
-    </div>
-</div> 
-
-
-            </div>
-
-            <div class="md:hidden flex items-center gap-4">
-                <div id="mobile-user-avatar" class="hidden w-10 h-10 rounded-full border border-cyanGlow/30 overflow-hidden bg-white/5">
-                    <img id="mobile-avatar-img" src="" class="w-full h-full object-cover" alt="User">
+                <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer"
+                    onclick="window.location.href='index.html'">
+                    <img src="https://i.ibb.co.com/pj0XT02b/image.png" alt="CuriosityOS Logo"
+                        class="w-16 h-16 object-contain brightness-110">
+                    <span class="font-heading font-bold text-2xl text-white tracking-tight">CIRL</span>
                 </div>
-                <button id="mobile-menu-btn" class="text-gray-300 hover:text-cyanGlow transition-colors focus:outline-none">
-                    <i data-lucide="menu" class="w-6 h-6"></i>
-                </button>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="about.html"
+                        class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">About</a>
+                    <a href="project.html"
+                        class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">Engine-1</a>
+                    <a href="research.html"
+                        class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">Engine-2</a>
+                    <a href="resources.html"
+                        class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">Engine-3</a>
+                    <a href="community.html"
+                        class="text-gray-300 hover:text-cyanGlow transition-colors text-sm font-medium uppercase tracking-wider">Community</a>
+
+                    <div id="nav-auth-section" class="flex items-center gap-4 border-l border-white/10 pl-8">
+                        <a href="auth.html" id="nav-login-btn"
+                            class="px-6 py-2 rounded-full bg-cyanGlow text-scienceBlue font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all">
+                            Join Us
+                        </a>
+
+                        <div id="nav-user-profile" class="hidden flex items-center gap-3 group cursor-pointer relative">
+                            <div class="text-right">
+                                <p id="user-name" class="text-[11px] font-bold text-white leading-none"></p>
+                            </div>
+                            <div
+                                class="w-10 h-10 rounded-full border border-cyanGlow/30 overflow-hidden group-hover:border-cyanGlow transition-colors bg-white/5">
+                                <img id="user-avatar" src="" class="w-full h-full object-cover" alt="User">
+                            </div>
+
+                            <div
+                                class="absolute top-full right-0 mt-2 w-40 glass-panel rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 overflow-hidden border border-white/10">
+                                <a href="edit-profile.html"
+                                    class="w-full px-4 py-3 text-left text-[10px] font-bold text-cyanGlow hover:bg-cyanGlow/10 transition-colors flex items-center gap-2 uppercase border-b border-white/10">
+                                    <i data-lucide="user-cog" class="w-3 h-3"></i> Profile
+                                </a>
+                                <button onclick="logout()"
+                                    class="w-full px-4 py-3 text-left text-[10px] font-bold text-red-400 hover:bg-red-500/10 transition-colors flex items-center gap-2 uppercase">
+                                    <i data-lucide="log-out" class="w-3 h-3"></i> Logout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn"
+                        class="text-gray-300 hover:text-cyanGlow transition-colors focus:outline-none p-2">
+                        <i data-lucide="menu" class="w-8 h-8"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <div id="mobile-menu"
+        class="fixed inset-0 z-[100] bg-scienceBlue/95 backdrop-blur-xl flex flex-col items-center justify-center opacity-0 pointer-events-none transition-all duration-300 md:hidden">
+
+        <button id="menu-close-btn" class="absolute top-8 right-8 text-gray-400 hover:text-cyanGlow transition-colors">
+            <i data-lucide="x" class="w-10 h-10"></i>
+        </button>
+
+        <div class="flex flex-col space-y-6 text-center items-center w-full px-6">
+            <a href="about.html"
+                class="mobile-link text-3xl font-heading text-white hover:text-cyanGlow transition-colors">About</a>
+            <a href="project.html"
+                class="mobile-link text-3xl font-heading text-white hover:text-cyanGlow transition-colors">Project</a>
+            <a href="research.html"
+                class="mobile-link text-3xl font-heading text-white hover:text-cyanGlow transition-colors">Research</a>
+            <a href="resources.html"
+                class="mobile-link text-3xl font-heading text-white hover:text-cyanGlow transition-colors">Resources</a>
+            <a href="community.html"
+                class="mobile-link text-3xl font-heading text-white hover:text-cyanGlow transition-colors">Community</a>
+
+            <div class="w-full h-px bg-white/10 my-4 max-w-[200px]"></div>
+
+            <a href="auth.html" id="mobile-login-btn"
+                class="mobile-link px-8 py-3 rounded-full bg-cyanGlow text-scienceBlue font-bold text-lg w-full max-w-xs shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all text-center">Join
+                Us</a>
+
+            <div id="mobile-user-profile" class="hidden flex flex-col items-center gap-4 w-full">
+                <div class="flex items-center gap-4">
+                    <img id="mobile-user-avatar" src=""
+                        class="w-12 h-12 rounded-full border border-cyanGlow/50 object-cover" alt="User">
+                    <span id="mobile-user-name" class="text-xl font-bold text-white"></span>
+                </div>
+                <div class="flex gap-4 w-full max-w-xs justify-center">
+                    <a href="edit-profile.html"
+                        class="mobile-link px-6 py-2 rounded-lg border border-cyanGlow/50 text-cyanGlow font-bold text-sm flex items-center justify-center gap-2">
+                        <i data-lucide="user-cog" class="w-4 h-4"></i> Profile
+                    </a>
+                    <button onclick="logout()"
+                        class="px-6 py-2 rounded-lg border border-red-500/50 text-red-400 font-bold text-sm flex items-center justify-center gap-2">
+                        <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</nav>
-
- <!-- Mobile Menu Overlay -->
-  <div id="mobile-menu" class="fixed inset-0 z-40 bg-scienceBlue/95 backdrop-blur-xl flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
-    <div class="flex flex-col space-y-6 text-center items-center">
-        <a href="about.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">About</a>
-        <a href="project.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">Project</a>
-        <a href="research.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">Research</a>
-        <a href="community.html" class="mobile-link text-2xl font-heading text-white hover:text-cyanGlow transition-colors">Community</a>
-        
-        <div id="mobile-auth-toggle" class="pt-4">
-            <a href="auth.html" id="mobile-login-btn" class="mobile-link px-8 py-3 rounded-full bg-cyanGlow text-scienceBlue font-bold text-lg">Join Us</a>
-            <button id="mobile-logout-btn" onclick="logout()" class="hidden px-8 py-3 rounded-full border border-red-500/50 text-red-400 font-bold text-lg flex items-center gap-2">
-                <i data-lucide="log-out" class="w-5 h-5"></i> Logout
-            </button>
-        </div>
-    </div>
-</div>
 
     <main>
         <!-- 2. HERO SECTION -->
@@ -234,7 +272,9 @@
             <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel mb-8 animate-fade-in-up">
                     <span class="w-2 h-2 rounded-full bg-curiosityOrange animate-pulse"></span>
-                    <span class="text-xs font-medium text-gray-300 uppercase tracking-wider">CuriosityOS Foundation Initiative</span>
+                    <span class="text-xs font-medium text-gray-300 uppercase tracking-wider">CuriosityOS Institute of
+                        Research & Learning (CIRL)
+                        Initiative</span>
                 </div>
                 <h1 class="font-heading text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-tight">
                     Rebuilding the Future <br />
@@ -245,17 +285,20 @@
                     A research driven platform advancing curiosity, learning behavior, and measurable student progress.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <a href="#platform" class="w-full sm:w-auto px-8 py-4 rounded-lg bg-cyanGlow text-scienceBlue font-bold hover:bg-white transition-colors duration-300 flex items-center justify-center gap-2">
+                    <a href="#platform"
+                        class="w-full sm:w-auto px-8 py-4 rounded-lg bg-cyanGlow text-scienceBlue font-bold hover:bg-white transition-colors duration-300 flex items-center justify-center gap-2">
                         Explore Platform <i data-lucide="arrow-right" class="w-5 h-5"></i>
                     </a>
-                    <a href="#research" class="w-full sm:w-auto px-8 py-4 rounded-lg glass-panel text-white hover:bg-white/10 transition-colors duration-300 flex items-center justify-center gap-2">
+                    <a href="#research"
+                        class="w-full sm:w-auto px-8 py-4 rounded-lg glass-panel text-white hover:bg-white/10 transition-colors duration-300 flex items-center justify-center gap-2">
                         View Research Initiative <i data-lucide="microscope" class="w-5 h-5"></i>
                     </a>
                 </div>
             </div>
-            
+
             <!-- Scroll Indicator -->
-            <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
+            <div
+                class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
                 <span class="text-xs uppercase tracking-widest text-cyanGlow">Scroll to explore</span>
                 <div class="w-[1px] h-12 bg-gradient-to-b from-cyanGlow to-transparent"></div>
             </div>
@@ -271,35 +314,44 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <!-- Problem -->
-                    <div class="glass-panel p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 about-card">
-                        <div class="w-14 h-14 rounded-xl bg-red-500/10 flex items-center justify-center mb-6 border border-red-500/20">
+                    <div
+                        class="glass-panel p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 about-card">
+                        <div
+                            class="w-14 h-14 rounded-xl bg-red-500/10 flex items-center justify-center mb-6 border border-red-500/20">
                             <i data-lucide="alert-circle" class="w-7 h-7 text-red-400"></i>
                         </div>
                         <h3 class="font-heading text-2xl font-bold text-white mb-4">Problem</h3>
                         <p class="text-gray-400 leading-relaxed">
-                            Traditional education suppresses curiosity. Standardized testing and rigid curriculums prioritize memorization over exploration, leading to disengaged students.
+                            Traditional education suppresses curiosity. Standardized testing and rigid curriculums
+                            prioritize memorization over exploration, leading to disengaged students.
                         </p>
                     </div>
 
                     <!-- Solution -->
-                    <div class="glass-panel p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 about-card">
-                        <div class="w-14 h-14 rounded-xl bg-cyanGlow/10 flex items-center justify-center mb-6 border border-cyanGlow/20">
+                    <div
+                        class="glass-panel p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 about-card">
+                        <div
+                            class="w-14 h-14 rounded-xl bg-cyanGlow/10 flex items-center justify-center mb-6 border border-cyanGlow/20">
                             <i data-lucide="lightbulb" class="w-7 h-7 text-cyanGlow"></i>
                         </div>
                         <h3 class="font-heading text-2xl font-bold text-white mb-4">Solution</h3>
                         <p class="text-gray-400 leading-relaxed">
-                            CuriosityOS measures and develops curiosity in students through interactive, inquiry-based learning environments that adapt to individual interests.
+                            CIRL measures and develops curiosity in students through interactive, inquiry-based
+                            learning environments that adapt to individual interests.
                         </p>
                     </div>
 
                     <!-- Mission -->
-                    <div class="glass-panel p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 about-card">
-                        <div class="w-14 h-14 rounded-xl bg-curiosityOrange/10 flex items-center justify-center mb-6 border border-curiosityOrange/20">
+                    <div
+                        class="glass-panel p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 about-card">
+                        <div
+                            class="w-14 h-14 rounded-xl bg-curiosityOrange/10 flex items-center justify-center mb-6 border border-curiosityOrange/20">
                             <i data-lucide="rocket" class="w-7 h-7 text-curiosityOrange"></i>
                         </div>
                         <h3 class="font-heading text-2xl font-bold text-white mb-4">Mission</h3>
                         <p class="text-gray-400 leading-relaxed">
-                            Build the world's first curiosity-driven learning intelligence system to reshape how knowledge is acquired and assessed globally.
+                            Build the world's first curiosity-driven learning intelligence system to reshape how
+                            knowledge is acquired and assessed globally.
                         </p>
                     </div>
                 </div>
@@ -310,197 +362,287 @@
 
 
         <section id="faq" class="relative py-24 z-10">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">
-                Frequently Asked <span class="text-cyanGlow">Questions</span>
-            </h2>
-            <div class="w-24 h-1 bg-cyanGlow mx-auto rounded-full"></div>
-        </div>
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">
+                        Frequently Asked <span class="text-cyanGlow">Questions</span>
+                    </h2>
+                    <div class="w-24 h-1 bg-cyanGlow mx-auto rounded-full"></div>
+                </div>
 
-        <div class="space-y-4">
-            <div class="faq-item glass-panel rounded-2xl border border-white/5 overflow-hidden transition-all duration-300">
-                <button class="faq-trigger w-full flex justify-between items-center p-6 text-left hover:bg-white/5">
-                    <span class="font-bold text-lg text-white">What is CuriosityOS?</span>
-                    <i data-lucide="chevron-down" class="text-cyanGlow transition-transform duration-300"></i>
-                </button>
-                <div class="faq-content max-h-0 opacity-0 overflow-hidden px-6 pb-6 text-gray-400 leading-relaxed">
-                    <p>CuriosityOS is an educational initiative that studies how curiosity influences learning and cognitive development in students.
-The organization designs curiosity-driven learning frameworks and tests them through real-world educational research projects with students.
+                <div class="space-y-4">
+                    <div
+                        class="faq-item glass-panel rounded-2xl border border-white/5 overflow-hidden transition-all duration-300">
+                        <button
+                            class="faq-trigger w-full flex justify-between items-center p-6 text-left hover:bg-white/5">
+                            <span class="font-bold text-lg text-white">What is CIRL?</span>
+                            <i data-lucide="chevron-down" class="text-cyanGlow transition-transform duration-300"></i>
+                        </button>
+                        <div
+                            class="faq-content max-h-0 opacity-0 overflow-hidden px-6 pb-6 text-gray-400 leading-relaxed">
+                            <p>CIRL is an educational initiative that studies how curiosity influences learning
+                                and cognitive development in students.
+                                The organization designs curiosity-driven learning frameworks and tests them through
+                                real-world educational research projects with students.
 
-The goal is to understand how structured curiosity can improve critical thinking, engagement, and long-term learning outcomes.</p>
+                                The goal is to understand how structured curiosity can improve critical thinking,
+                                engagement, and long-term learning outcomes.</p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="faq-item glass-panel rounded-2xl border border-white/5 overflow-hidden transition-all duration-300">
+                        <button
+                            class="faq-trigger w-full flex justify-between items-center p-6 text-left hover:bg-white/5">
+                            <span class="font-bold text-lg text-white">Why does CIRL focus on curiosity?</span>
+                            <i data-lucide="chevron-down" class="text-cyanGlow transition-transform duration-300"></i>
+                        </button>
+                        <div
+                            class="faq-content max-h-0 opacity-0 overflow-hidden px-6 pb-6 text-gray-400 leading-relaxed">
+                            <p>Curiosity is one of the strongest drivers of human learning. Throughout history, major
+                                scientific discoveries were driven by individuals who asked questions about the world
+                                around them.
+
+                                However, many modern education systems prioritize memorization rather than exploration.
+                                CIRL investigates how structured curiosity-based activities can help students
+                                become more engaged, independent learners.
+
+                                Figures such as Albert Einstein and Isaac Newton are often cited as examples of how
+                                curiosity fuels discovery and innovation.</p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="faq-item glass-panel rounded-2xl border border-white/5 overflow-hidden transition-all duration-300">
+                        <button
+                            class="faq-trigger w-full flex justify-between items-center p-6 text-left hover:bg-white/5">
+                            <span class="font-bold text-lg text-white">What does CIRL actually do?</span>
+                            <i data-lucide="chevron-down" class="text-cyanGlow transition-transform duration-300"></i>
+                        </button>
+                        <div
+                            class="faq-content max-h-0 opacity-0 overflow-hidden px-6 pb-6 text-gray-400 leading-relaxed">
+                            <p>CIRL supports curiosity-driven learning through research, student-led projects,
+                                and academic exploration.
+
+                                We conduct educational research and real-world projects with curious students, helping
+                                them turn their ideas into experiments, investigations, and learning initiatives.
+
+                                We also support students who want to explore subjects beyond the traditional school
+                                syllabus, including areas like coding, astronomy, aerodynamics, artificial intelligence,
+                                and quantum physics. Our goal is to encourage deeper questioning, exploration, and
+                                independent learning.</p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="faq-item glass-panel rounded-2xl border border-white/5 overflow-hidden transition-all duration-300">
+                        <button
+                            class="faq-trigger w-full flex justify-between items-center p-6 text-left hover:bg-white/5">
+                            <span class="font-bold text-lg text-white">What is the long-term vision of
+                                CIRL?</span>
+                            <i data-lucide="chevron-down" class="text-cyanGlow transition-transform duration-300"></i>
+                        </button>
+                        <div
+                            class="faq-content max-h-0 opacity-0 overflow-hidden px-6 pb-6 text-gray-400 leading-relaxed">
+                            <p></p>The long-term vision of CIRL is to create a global ecosystem where curiosity
+                            becomes a central pillar of education.
+
+                            By combining research, technology, projects and community collaboration, CIRL aims to
+                            develop scalable systems that encourage inquiry, exploration, and lifelong learning.
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="faq-item glass-panel rounded-2xl border border-white/5 overflow-hidden transition-all duration-300">
-                <button class="faq-trigger w-full flex justify-between items-center p-6 text-left hover:bg-white/5">
-                    <span class="font-bold text-lg text-white">Why does CuriosityOS focus on curiosity?</span>
-                    <i data-lucide="chevron-down" class="text-cyanGlow transition-transform duration-300"></i>
-                </button>
-                <div class="faq-content max-h-0 opacity-0 overflow-hidden px-6 pb-6 text-gray-400 leading-relaxed">
-                    <p>Curiosity is one of the strongest drivers of human learning. Throughout history, major scientific discoveries were driven by individuals who asked questions about the world around them.
-
-However, many modern education systems prioritize memorization rather than exploration. CuriosityOS investigates how structured curiosity-based activities can help students become more engaged, independent learners.
-
-Figures such as Albert Einstein and Isaac Newton are often cited as examples of how curiosity fuels discovery and innovation.</p>
-                </div>
-            </div>
-
-            <div class="faq-item glass-panel rounded-2xl border border-white/5 overflow-hidden transition-all duration-300">
-                <button class="faq-trigger w-full flex justify-between items-center p-6 text-left hover:bg-white/5">
-                    <span class="font-bold text-lg text-white">What does CuriosityOS actually do?</span>
-                    <i data-lucide="chevron-down" class="text-cyanGlow transition-transform duration-300"></i>
-                </button>
-                <div class="faq-content max-h-0 opacity-0 overflow-hidden px-6 pb-6 text-gray-400 leading-relaxed">
-                    <p>CuriosityOS supports curiosity-driven learning through research, student-led projects, and academic exploration.
-
-We conduct educational research and real-world projects with curious students, helping them turn their ideas into experiments, investigations, and learning initiatives.
-
-We also support students who want to explore subjects beyond the traditional school syllabus, including areas like coding, astronomy, aerodynamics, artificial intelligence, and quantum physics. Our goal is to encourage deeper questioning, exploration, and independent learning.</p>
-                </div>
-            </div>
-
-            <div class="faq-item glass-panel rounded-2xl border border-white/5 overflow-hidden transition-all duration-300">
-                <button class="faq-trigger w-full flex justify-between items-center p-6 text-left hover:bg-white/5">
-                    <span class="font-bold text-lg text-white">What is the long-term vision of CuriosityOS?</span>
-                    <i data-lucide="chevron-down" class="text-cyanGlow transition-transform duration-300"></i>
-                </button>
-                <div class="faq-content max-h-0 opacity-0 overflow-hidden px-6 pb-6 text-gray-400 leading-relaxed">
-                    <p></p>The long-term vision of CuriosityOS is to create a global ecosystem where curiosity becomes a central pillar of education.
-
-By combining research, technology, projects and community collaboration, CuriosityOS aims to develop scalable systems that encourage inquiry, exploration, and lifelong learning.
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+        </section>
 
         <!-- 4. STUDENT PERFORMANCE PLATFORM & 5. CURIOSITY ANALYTICS -->
         <section id="platform" class="py-24 relative z-10 bg-scienceBlue/20 border-y border-white/5">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex flex-col md:flex-row justify-between items-end mb-12 section-header">
                     <div>
-                        <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">Student Performance Platform</h2>
-                        <p class="text-gray-400 max-w-2xl">Real-time telemetry of student engagement, question formulation, and exploratory behavior.</p>
+                        <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">Student Performance
+                            Platform</h2>
+                        <p class="text-gray-400 max-w-2xl">Real-time telemetry of student engagement, question
+                            formulation, and exploratory behavior.</p>
                     </div>
-                    <a href="dashboard.html" class="block no-underline">
-                        <div class="glass-card ..."> 
-                            <h3>Live Dashboard Preview</h3>
-                        </div>
+                    <div class="glass-card ...">
+                        <h3>Live Dashboard Preview</h3>
+                    </div>
                     </a>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Metrics Column -->
-                    <div class="lg:col-span-1 space-y-6">
-                        <div class="glass-panel p-6 rounded-2xl metric-card">
+                <!-- Metrics Column -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                    <div class="md:col-span-1 space-y-6">
+                        <div onclick="checkAccess('curiosity')"
+                            class="glass-panel p-6 rounded-2xl metric-card cursor-pointer group hover:border-cyanGlow/50 transition-all duration-300">
                             <div class="flex justify-between items-start mb-2">
-                                <span class="text-gray-400 font-medium text-sm uppercase tracking-wider">Curiosity Score</span>
-                                <i data-lucide="activity" class="text-cyanGlow w-5 h-5"></i>
+                                <span class="text-gray-400 font-medium text-sm uppercase tracking-wider">Curiosity
+                                    Score</span>
+                                <i data-lucide="activity"
+                                    class="text-cyanGlow w-5 h-5 group-hover:scale-110 transition-transform"></i>
                             </div>
                             <div class="flex items-baseline gap-2">
-                                <span class="font-heading text-5xl font-bold text-white counter" data-target="82">0</span>
+                                <span class="font-heading text-5xl font-bold text-white counter"
+                                    data-target="82">0</span>
                                 <span class="text-cyanGlow text-sm font-medium">/ 100</span>
                             </div>
                             <div class="mt-4 w-full bg-gray-800 rounded-full h-1.5">
-                                <div class="bg-gradient-to-r from-cyanGlow to-curiosityOrange h-1.5 rounded-full w-[82%]"></div>
+                                <div
+                                    class="bg-gradient-to-r from-cyanGlow to-curiosityOrange h-1.5 rounded-full w-[82%]">
+                                </div>
                             </div>
                         </div>
 
-                        <div class="glass-panel p-6 rounded-2xl metric-card">
+                        <div onclick="checkAccess('questions')"
+                            class="glass-panel p-6 rounded-2xl metric-card cursor-pointer group hover:border-curiosityOrange/50 transition-all duration-300">
                             <div class="flex justify-between items-start mb-2">
-                                <span class="text-gray-400 font-medium text-sm uppercase tracking-wider">Weekly Questions</span>
-                                <i data-lucide="help-circle" class="text-curiosityOrange w-5 h-5"></i>
+                                <span class="text-gray-400 font-medium text-sm uppercase tracking-wider">Weekly
+                                    Questions</span>
+                                <i data-lucide="help-circle"
+                                    class="text-curiosityOrange w-5 h-5 group-hover:rotate-12 transition-transform"></i>
                             </div>
                             <div class="flex items-baseline gap-2">
-                                <span class="font-heading text-5xl font-bold text-white counter" data-target="23">0</span>
+                                <span class="font-heading text-5xl font-bold text-white counter"
+                                    data-target="23">0</span>
                             </div>
-                            <p class="text-xs text-green-400 mt-2 flex items-center gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +14% from last week</p>
+                            <p class="text-xs text-green-400 mt-2 flex items-center gap-1">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i> +14% from last week
+                            </p>
                         </div>
 
-                        <div class="glass-panel p-6 rounded-2xl metric-card">
+                        <div onclick="checkAccess('learning')"
+                            class="glass-panel p-6 rounded-2xl metric-card cursor-pointer group hover:border-purple-500/50 transition-all duration-300">
                             <div class="flex justify-between items-start mb-2">
-                                <span class="text-gray-400 font-medium text-sm uppercase tracking-wider">Learning Time</span>
-                                <i data-lucide="clock" class="text-purple-400 w-5 h-5"></i>
+                                <span class="text-gray-400 font-medium text-sm uppercase tracking-wider">Learning
+                                    Time</span>
+                                <i data-lucide="clock" class="text-purple-400 w-5 h-5 group-hover:animate-pulse"></i>
                             </div>
                             <div class="flex items-baseline gap-2">
-                                <span class="font-heading text-5xl font-bold text-white counter" data-target="14">0</span>
+                                <span class="font-heading text-5xl font-bold text-white counter"
+                                    data-target="14">0</span>
                                 <span class="text-gray-400 text-sm font-medium">hours</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Main Chart Area -->
-                    <div class="lg:col-span-2 glass-panel p-8 rounded-2xl flex flex-col">
-                        <div class="flex justify-between items-center mb-8">
+                    <div onclick="checkAccess('learning')"
+                        class="md:col-span-2 glass-panel p-8 rounded-3xl relative overflow-hidden flex flex-col min-h-[500px]">
+                        <div class="flex justify-between items-center mb-8 relative z-10">
                             <div>
-                                <h3 class="font-heading text-xl font-bold text-white">Weekly Curiosity Growth</h3>
-                                <p class="text-sm text-gray-400">Exploration index over the last 7 days</p>
+                                <h3 class="text-xl font-bold text-white font-heading">Weekly Curiosity Growth</h3>
+                                <p class="text-gray-400 text-sm">Exploration index over the last 7 days</p>
                             </div>
-                            <div class="flex gap-2">
-                                <button class="px-3 py-1 rounded bg-white/10 text-xs text-white hover:bg-white/20 transition">Week</button>
-                                <button class="px-3 py-1 rounded bg-transparent text-xs text-gray-400 hover:text-white transition">Month</button>
+                            <div class="flex bg-darkNavy/50 p-1 rounded-xl border border-gray-800">
+                                <button
+                                    class="px-4 py-1.5 rounded-lg text-sm font-medium bg-gray-800 text-white shadow-lg">Week</button>
+                                <button
+                                    class="px-4 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:text-white transition-colors">Month</button>
                             </div>
                         </div>
 
-                        <!-- Bar Chart Mockup -->
-                        <div class="flex-grow flex items-end justify-between gap-2 md:gap-4 pt-10 pb-4 border-b border-white/10 relative">
-                            <!-- Grid lines -->
-                            <div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-10">
-                                <div class="w-full h-px bg-white"></div>
-                                <div class="w-full h-px bg-white"></div>
-                                <div class="w-full h-px bg-white"></div>
-                                <div class="w-full h-px bg-white"></div>
-                            </div>
-
-                            <!-- Bars -->
-                            <div class="w-full flex justify-center group">
-                                <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative" style="height: 40%;">
-                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">40</div>
-                                </div>
-                            </div>
-                            <div class="w-full flex justify-center group">
-                                <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative" style="height: 55%;">
-                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">55</div>
-                                </div>
-                            </div>
-                            <div class="w-full flex justify-center group">
-                                <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative" style="height: 45%;">
-                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">45</div>
-                                </div>
-                            </div>
-                            <div class="w-full flex justify-center group">
-                                <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative" style="height: 70%;">
-                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">70</div>
-                                </div>
-                            </div>
-                            <div class="w-full flex justify-center group">
-                                <div class="w-full max-w-[40px] bg-gradient-to-t from-scienceBlue to-cyanGlow/50 border border-cyanGlow rounded-t-sm chart-bar relative shadow-[0_0_15px_rgba(0,229,255,0.3)]" style="height: 85%;">
-                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">85</div>
-                                </div>
-                            </div>
-                            <div class="w-full flex justify-center group">
-                                <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative" style="height: 60%;">
-                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">60</div>
-                                </div>
-                            </div>
-                            <div class="w-full flex justify-center group">
-                                <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative" style="height: 75%;">
-                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">75</div>
+                        <div class="flex-grow flex items-end justify-between gap-4 relative z-10 px-2 h-full">
+                            <div class="flex-grow flex items-end justify-around h-64 border-b border-gray-800/50 pb-2">
+                                <div class="w-8 bg-cyanGlow/20 rounded-t-lg border-t border-cyanGlow/40 h-[40%]"></div>
+                                <div class="w-8 bg-cyanGlow/20 rounded-t-lg border-t border-cyanGlow/40 h-[60%]"></div>
+                                <div class="w-8 bg-cyanGlow/20 rounded-t-lg border-t border-cyanGlow/40 h-[55%]"></div>
+                                <div class="w-8 bg-cyanGlow/20 rounded-t-lg border-t border-cyanGlow/40 h-[90%]"></div>
+                                <div class="w-8 bg-cyanGlow/20 rounded-t-lg border-t border-cyanGlow/40 h-[75%]"></div>
+                                <div class="w-8 bg-cyanGlow/20 rounded-t-lg border-t border-cyanGlow/40 h-[85%]"></div>
+                                <div
+                                    class="w-8 bg-curiosityOrange/30 rounded-t-lg border-t border-curiosityOrange/60 h-[95%]">
                                 </div>
                             </div>
                         </div>
-                        <div class="flex justify-between mt-4 text-xs text-gray-400 font-medium uppercase tracking-wider">
-                            <span class="w-full text-center">Mon</span>
-                            <span class="w-full text-center">Tue</span>
-                            <span class="w-full text-center">Wed</span>
-                            <span class="w-full text-center">Thu</span>
-                            <span class="w-full text-center text-cyanGlow">Fri</span>
-                            <span class="w-full text-center">Sat</span>
-                            <span class="w-full text-center">Sun</span>
+
+                        <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-cyanGlow/5 blur-[100px]"></div>
+                    </div>
+
+                </div>
+                <!-- Main Chart Area -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                    <!-- Bar Chart Mockup -->
+                    <div
+                        class="flex-grow flex items-end justify-between gap-2 md:gap-4 pt-10 pb-4 border-b border-white/10 relative">
+                        <!-- Grid lines -->
+                        <div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-10">
+                            <div class="w-full h-px bg-white"></div>
+                            <div class="w-full h-px bg-white"></div>
+                            <div class="w-full h-px bg-white"></div>
+                            <div class="w-full h-px bg-white"></div>
+                        </div>
+
+                        <!-- Bars -->
+                        <div class="w-full flex justify-center group">
+                            <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative"
+                                style="height: 40%;">
+                                <div
+                                    class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                    40</div>
+                            </div>
+                        </div>
+                        <div class="w-full flex justify-center group">
+                            <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative"
+                                style="height: 55%;">
+                                <div
+                                    class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                    55</div>
+                            </div>
+                        </div>
+                        <div class="w-full flex justify-center group">
+                            <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative"
+                                style="height: 45%;">
+                                <div
+                                    class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                    45</div>
+                            </div>
+                        </div>
+                        <div class="w-full flex justify-center group">
+                            <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative"
+                                style="height: 70%;">
+                                <div
+                                    class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                    70</div>
+                            </div>
+                        </div>
+                        <div class="w-full flex justify-center group">
+                            <div class="w-full max-w-[40px] bg-gradient-to-t from-scienceBlue to-cyanGlow/50 border border-cyanGlow rounded-t-sm chart-bar relative shadow-[0_0_15px_rgba(0,229,255,0.3)]"
+                                style="height: 85%;">
+                                <div
+                                    class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                    85</div>
+                            </div>
+                        </div>
+                        <div class="w-full flex justify-center group">
+                            <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative"
+                                style="height: 60%;">
+                                <div
+                                    class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                    60</div>
+                            </div>
+                        </div>
+                        <div class="w-full flex justify-center group">
+                            <div class="w-full max-w-[40px] bg-scienceBlue border border-cyanGlow/30 rounded-t-sm chart-bar relative"
+                                style="height: 75%;">
+                                <div
+                                    class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                    75</div>
+                            </div>
                         </div>
                     </div>
+                    <div class="flex justify-between mt-4 text-xs text-gray-400 font-medium uppercase tracking-wider">
+                        <span class="w-full text-center">Mon</span>
+                        <span class="w-full text-center">Tue</span>
+                        <span class="w-full text-center">Wed</span>
+                        <span class="w-full text-center">Thu</span>
+                        <span class="w-full text-center text-cyanGlow">Fri</span>
+                        <span class="w-full text-center">Sat</span>
+                        <span class="w-full text-center">Sun</span>
+                    </div>
                 </div>
+            </div>
             </div>
         </section>
 
@@ -508,22 +650,27 @@ By combining research, technology, projects and community collaboration, Curiosi
         <section id="research" class="py-24 relative z-10">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16 section-header">
-                    <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">Curiosity Driven Learning Intervention Study</h2>
-                    <p class="text-gray-400 max-w-3xl mx-auto">The CuriosityOS Research Project aims to quantify the impact of curiosity-centric pedagogies on long-term knowledge retention.</p>
+                    <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">Curiosity Driven Learning
+                        Intervention Study</h2>
+                    <p class="text-gray-400 max-w-3xl mx-auto">The CIRL Research Project aims to quantify the
+                        impact of curiosity-centric pedagogies on long-term knowledge retention.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="glass-panel p-8 rounded-2xl border-l-4 border-l-cyanGlow research-card">
                         <h4 class="font-heading text-xl font-bold text-white mb-3">Field Research</h4>
-                        <p class="text-gray-400 text-sm">Conducting primary school curiosity experiments to observe natural inquiry patterns in unconstrained environments.</p>
+                        <p class="text-gray-400 text-sm">Conducting primary school curiosity experiments to observe
+                            natural inquiry patterns in unconstrained environments.</p>
                     </div>
                     <div class="glass-panel p-8 rounded-2xl border-l-4 border-l-curiosityOrange research-card">
                         <h4 class="font-heading text-xl font-bold text-white mb-3">Student Data Analysis</h4>
-                        <p class="text-gray-400 text-sm">Tracking learning behavior, question formulation density, and exploratory pathways through complex topics.</p>
+                        <p class="text-gray-400 text-sm">Tracking learning behavior, question formulation density, and
+                            exploratory pathways through complex topics.</p>
                     </div>
                     <div class="glass-panel p-8 rounded-2xl border-l-4 border-l-purple-500 research-card">
                         <h4 class="font-heading text-xl font-bold text-white mb-3">Research Dashboard</h4>
-                        <p class="text-gray-400 text-sm">Aggregating performance visualization for educators and researchers to identify optimal intervention points.</p>
+                        <p class="text-gray-400 text-sm">Aggregating performance visualization for educators and
+                            researchers to identify optimal intervention points.</p>
                     </div>
                 </div>
             </div>
@@ -534,37 +681,45 @@ By combining research, technology, projects and community collaboration, Curiosi
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex flex-col lg:flex-row gap-12 items-center">
                     <div class="lg:w-1/2 section-header">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyanGlow/10 text-cyanGlow border border-cyanGlow/20 mb-6">
+                        <div
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyanGlow/10 text-cyanGlow border border-cyanGlow/20 mb-6">
                             <i data-lucide="bot" class="w-4 h-4"></i>
                             <span class="text-xs font-medium uppercase tracking-wider">Intelligent Agent</span>
                         </div>
-                        <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-6">AI Learning Assistant</h2>
+                        <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-6">AI Learning Assistant
+                        </h2>
                         <p class="text-gray-400 text-lg mb-8 leading-relaxed">
-                            Our conversational AI doesn't just give answers—it guides students to discover them. By employing Socratic questioning, the assistant nurtures the student's innate curiosity.
+                            Our conversational AI doesn't just give answers—it guides students to discover them. By
+                            employing Socratic questioning, the assistant nurtures the student's innate curiosity.
                         </p>
                         <ul class="space-y-4 mb-8">
                             <li class="flex items-center gap-3 text-gray-300">
-                                <i data-lucide="check-circle-2" class="text-cyanGlow w-5 h-5"></i> Context-aware responses
+                                <i data-lucide="check-circle-2" class="text-cyanGlow w-5 h-5"></i> Context-aware
+                                responses
                             </li>
                             <li class="flex items-center gap-3 text-gray-300">
-                                <i data-lucide="check-circle-2" class="text-cyanGlow w-5 h-5"></i> Encourages follow-up questions
+                                <i data-lucide="check-circle-2" class="text-cyanGlow w-5 h-5"></i> Encourages follow-up
+                                questions
                             </li>
                             <li class="flex items-center gap-3 text-gray-300">
-                                <i data-lucide="check-circle-2" class="text-cyanGlow w-5 h-5"></i> Feeds data back to the curiosity metric
+                                <i data-lucide="check-circle-2" class="text-cyanGlow w-5 h-5"></i> Feeds data back to
+                                the curiosity metric
                             </li>
                         </ul>
                     </div>
 
                     <div class="lg:w-1/2 w-full">
                         <!-- Chat UI Mockup -->
-                        <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 shadow-2xl flex flex-col h-[500px]">
+                        <div
+                            class="glass-panel rounded-2xl overflow-hidden border border-white/10 shadow-2xl flex flex-col h-[500px]">
                             <!-- Chat Header -->
                             <div class="bg-darkNavy/80 p-4 border-b border-white/10 flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-cyanGlow/20 flex items-center justify-center border border-cyanGlow/50">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-cyanGlow/20 flex items-center justify-center border border-cyanGlow/50">
                                     <i data-lucide="cpu" class="text-cyanGlow w-5 h-5"></i>
                                 </div>
                                 <div>
-                                    <h3 class="font-heading font-bold text-white text-sm">CuriosityOS AI</h3>
+                                    <h3 class="font-heading font-bold text-white text-sm">CIRL AI</h3>
                                     <p class="text-xs text-cyanGlow flex items-center gap-1">
                                         <span class="w-1.5 h-1.5 rounded-full bg-cyanGlow"></span> Online
                                     </p>
@@ -575,29 +730,37 @@ By combining research, technology, projects and community collaboration, Curiosi
                             <div id="chat-messages" class="flex-grow p-6 overflow-y-auto flex flex-col gap-4">
                                 <!-- Initial Messages -->
                                 <div class="flex gap-3 max-w-[85%]">
-                                    <div class="w-8 h-8 rounded-full bg-cyanGlow/20 flex-shrink-0 flex items-center justify-center border border-cyanGlow/50 mt-1">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-cyanGlow/20 flex-shrink-0 flex items-center justify-center border border-cyanGlow/50 mt-1">
                                         <i data-lucide="cpu" class="text-cyanGlow w-4 h-4"></i>
                                     </div>
-                                    <div class="bg-white/5 border border-white/10 rounded-2xl rounded-tl-none p-3 text-sm text-gray-200">
+                                    <div
+                                        class="bg-white/5 border border-white/10 rounded-2xl rounded-tl-none p-3 text-sm text-gray-200">
                                         Hello! I'm your learning assistant. What are you curious about today?
                                     </div>
                                 </div>
-                                
+
                                 <div class="flex gap-3 max-w-[85%] self-end flex-row-reverse">
-                                    <div class="w-8 h-8 rounded-full bg-curiosityOrange/20 flex-shrink-0 flex items-center justify-center border border-curiosityOrange/50 mt-1">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-curiosityOrange/20 flex-shrink-0 flex items-center justify-center border border-curiosityOrange/50 mt-1">
                                         <i data-lucide="user" class="text-curiosityOrange w-4 h-4"></i>
                                     </div>
-                                    <div class="bg-curiosityOrange/20 border border-curiosityOrange/30 rounded-2xl rounded-tr-none p-3 text-sm text-white">
+                                    <div
+                                        class="bg-curiosityOrange/20 border border-curiosityOrange/30 rounded-2xl rounded-tr-none p-3 text-sm text-white">
                                         What is photosynthesis?
                                     </div>
                                 </div>
 
                                 <div class="flex gap-3 max-w-[85%]">
-                                    <div class="w-8 h-8 rounded-full bg-cyanGlow/20 flex-shrink-0 flex items-center justify-center border border-cyanGlow/50 mt-1">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-cyanGlow/20 flex-shrink-0 flex items-center justify-center border border-cyanGlow/50 mt-1">
                                         <i data-lucide="cpu" class="text-cyanGlow w-4 h-4"></i>
                                     </div>
-                                    <div class="bg-white/5 border border-white/10 rounded-2xl rounded-tl-none p-3 text-sm text-gray-200">
-                                        Photosynthesis is the process plants use to convert sunlight into energy. They take in carbon dioxide and water, and use light to create glucose (food) and oxygen. <br><br>What part of that process seems most interesting to you?
+                                    <div
+                                        class="bg-white/5 border border-white/10 rounded-2xl rounded-tl-none p-3 text-sm text-gray-200">
+                                        Photosynthesis is the process plants use to convert sunlight into energy. They
+                                        take in carbon dioxide and water, and use light to create glucose (food) and
+                                        oxygen. <br><br>What part of that process seems most interesting to you?
                                     </div>
                                 </div>
                             </div>
@@ -605,8 +768,11 @@ By combining research, technology, projects and community collaboration, Curiosi
                             <!-- Chat Input -->
                             <div class="p-4 bg-darkNavy/80 border-t border-white/10">
                                 <form id="chat-form" class="relative flex items-center">
-                                    <input type="text" id="chat-input" placeholder="Ask a question..." class="w-full bg-white/5 border border-white/10 rounded-full py-3 pl-4 pr-12 text-sm text-white focus:outline-none focus:border-cyanGlow/50 transition-colors" autocomplete="off">
-                                    <button type="submit" class="absolute right-2 w-8 h-8 rounded-full bg-cyanGlow flex items-center justify-center text-scienceBlue hover:bg-white transition-colors">
+                                    <input type="text" id="chat-input" placeholder="Ask a question..."
+                                        class="w-full bg-white/5 border border-white/10 rounded-full py-3 pl-4 pr-12 text-sm text-white focus:outline-none focus:border-cyanGlow/50 transition-colors"
+                                        autocomplete="off">
+                                    <button type="submit"
+                                        class="absolute right-2 w-8 h-8 rounded-full bg-cyanGlow flex items-center justify-center text-scienceBlue hover:bg-white transition-colors">
                                         <i data-lucide="send" class="w-4 h-4 ml-0.5"></i>
                                     </button>
                                 </form>
@@ -627,35 +793,43 @@ By combining research, technology, projects and community collaboration, Curiosi
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="glass-panel p-6 rounded-2xl feature-card hover:bg-white/5 transition-colors">
-                        <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mb-4 text-blue-400">
+                        <div
+                            class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mb-4 text-blue-400">
                             <i data-lucide="radar" class="w-6 h-6"></i>
                         </div>
                         <h4 class="font-heading font-bold text-white mb-2">Student Curiosity Tracking</h4>
-                        <p class="text-sm text-gray-400">Continuous monitoring of exploratory behavior and question generation metrics.</p>
+                        <p class="text-sm text-gray-400">Continuous monitoring of exploratory behavior and question
+                            generation metrics.</p>
                     </div>
 
                     <div class="glass-panel p-6 rounded-2xl feature-card hover:bg-white/5 transition-colors">
-                        <div class="w-12 h-12 rounded-full bg-cyanGlow/20 flex items-center justify-center mb-4 text-cyanGlow">
+                        <div
+                            class="w-12 h-12 rounded-full bg-cyanGlow/20 flex items-center justify-center mb-4 text-cyanGlow">
                             <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
                         </div>
                         <h4 class="font-heading font-bold text-white mb-2">Research Data Analytics</h4>
-                        <p class="text-sm text-gray-400">Comprehensive dashboards for researchers to analyze cohort performance and trends.</p>
+                        <p class="text-sm text-gray-400">Comprehensive dashboards for researchers to analyze cohort
+                            performance and trends.</p>
                     </div>
 
                     <div class="glass-panel p-6 rounded-2xl feature-card hover:bg-white/5 transition-colors">
-                        <div class="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center mb-4 text-purple-400">
+                        <div
+                            class="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center mb-4 text-purple-400">
                             <i data-lucide="brain-circuit" class="w-6 h-6"></i>
                         </div>
                         <h4 class="font-heading font-bold text-white mb-2">AI Learning Assistance</h4>
-                        <p class="text-sm text-gray-400">Socratic AI agents designed to prompt deeper thinking rather than just providing answers.</p>
+                        <p class="text-sm text-gray-400">Socratic AI agents designed to prompt deeper thinking rather
+                            than just providing answers.</p>
                     </div>
 
                     <div class="glass-panel p-6 rounded-2xl feature-card hover:bg-white/5 transition-colors">
-                        <div class="w-12 h-12 rounded-full bg-curiosityOrange/20 flex items-center justify-center mb-4 text-curiosityOrange">
+                        <div
+                            class="w-12 h-12 rounded-full bg-curiosityOrange/20 flex items-center justify-center mb-4 text-curiosityOrange">
                             <i data-lucide="network" class="w-6 h-6"></i>
                         </div>
                         <h4 class="font-heading font-bold text-white mb-2">Educational Collaboration</h4>
-                        <p class="text-sm text-gray-400">Tools for schools and researchers to share anonymized data and pedagogical insights.</p>
+                        <p class="text-sm text-gray-400">Tools for schools and researchers to share anonymized data and
+                            pedagogical insights.</p>
                     </div>
                 </div>
             </div>
@@ -666,16 +840,22 @@ By combining research, technology, projects and community collaboration, Curiosi
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <div class="glass-panel p-12 rounded-3xl border border-cyanGlow/30 relative overflow-hidden">
                     <!-- Decorative glow -->
-                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-cyanGlow/10 blur-[100px] rounded-full pointer-events-none"></div>
-                    
-                    <h2 class="font-heading text-4xl md:text-6xl font-bold text-white mb-6 relative z-10">Join the <span class="text-gradient">Curiosity Revolution</span></h2>
-                    <p class="text-xl text-gray-300 mb-10 relative z-10">Partner with the CuriosityOS Foundation to bring research-backed, curiosity-driven learning to your institution.</p>
-                    
+                    <div
+                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-cyanGlow/10 blur-[100px] rounded-full pointer-events-none">
+                    </div>
+
+                    <h2 class="font-heading text-4xl md:text-6xl font-bold text-white mb-6 relative z-10">Join the <span
+                            class="text-gradient">Curiosity Revolution</span></h2>
+                    <p class="text-xl text-gray-300 mb-10 relative z-10">Partner with the CIRL to
+                        bring research-backed, curiosity-driven learning to your institution.</p>
+
                     <div class="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
-                        <button class="w-full sm:w-auto px-8 py-4 rounded-lg bg-cyanGlow text-scienceBlue font-bold hover:bg-white transition-colors duration-300">
+                        <button
+                            class="w-full sm:w-auto px-8 py-4 rounded-lg bg-cyanGlow text-scienceBlue font-bold hover:bg-white transition-colors duration-300">
                             Start Exploring
                         </button>
-                        <button class="w-full sm:w-auto px-8 py-4 rounded-lg bg-transparent border border-white/20 text-white hover:bg-white/10 transition-colors duration-300">
+                        <button
+                            class="w-full sm:w-auto px-8 py-4 rounded-lg bg-transparent border border-white/20 text-white hover:bg-white/10 transition-colors duration-300">
                             View Research
                         </button>
                     </div>
@@ -690,28 +870,29 @@ By combining research, technology, projects and community collaboration, Curiosi
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                 <div class="md:col-span-2">
                     <div class="flex items-center gap-3 mb-6">
-                        <img src="https://i.ibb.co.com/pj0XT02b/image.png" 
-                        alt="CuriosityOS Logo" 
-                        class="w-16 h-16 object-contain brightness-110">
-                        <span class="font-heading font-bold text-xl text-white tracking-tight">CuriosityOS Foundation</span>
+                        <img src="https://i.ibb.co.com/pj0XT02b/image.png" alt="CuriosityOS Logo"
+                            class="w-16 h-16 object-contain brightness-110">
+                        <span class="font-heading font-bold text-xl text-white tracking-tight">CuriosityOS Institute of
+                            Research & Learning (CIRL)</span>
                     </div>
                     <p class="text-gray-400 text-sm max-w-sm mb-6">
-                        An educational technology research initiative dedicated to measuring and improving curiosity-driven learning in students worldwide.
+                        An educational technology research initiative dedicated to measuring and improving
+                        curiosity-driven learning in students worldwide.
                     </p>
                     <div class="text-sm text-gray-500">
-                        <p class="mb-1"><span class="text-gray-300">Founder:</span> Prosun Kanti Datta</p>
-                        <p><span class="text-gray-300">Email:</span> prosun07a@gmail.com</p>
+                        <p class="mb-1"><span class="text-gray-300"></span>Curiosity OS Institute of Research & Learning (CIRL)</p>
+                        <p><span class="text-gray-300">Email:</span> curiosityoscirl@gmail.com</p>
                         <p><span class="text-gray-300">Contact:</span> 01312646056</p>
                     </div>
                 </div>
-                
+
                 <div>
                     <h4 class="font-heading font-bold text-white mb-4 uppercase tracking-wider text-sm">Platform</h4>
                     <ul class="space-y-2 text-sm text-gray-400">
                         <li><a href="#" class="hover:text-cyanGlow transition-colors">Research Initiative</a></li>
                         <li><a href="#" class="hover:text-cyanGlow transition-colors">Analytics Dashboard</a></li>
-                         <li><a href="#" class="hover:text-cyanGlow transition-colors">Projects</a></li>
-                         <li><a href="#" class="hover:text-cyanGlow transition-colors">AI Assistant</a></li>
+                        <li><a href="#" class="hover:text-cyanGlow transition-colors">Projects</a></li>
+                        <li><a href="#" class="hover:text-cyanGlow transition-colors">AI Assistant</a></li>
                         <li><a href="#" class="hover:text-cyanGlow transition-colors">Documentation</a></li>
                     </ul>
                 </div>
@@ -719,16 +900,21 @@ By combining research, technology, projects and community collaboration, Curiosi
                 <div>
                     <h4 class="font-heading font-bold text-white mb-4 uppercase tracking-wider text-sm">Connect</h4>
                     <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#" class="hover:text-cyanGlow transition-colors flex items-center gap-2"><i data-lucide="facebook" class="w-4 h-4"></i> Facebook</a></li>
-                        <li><a href="#" class="hover:text-cyanGlow transition-colors flex items-center gap-2"><i data-lucide="instagram" class="w-4 h-4"></i> Instagram</a></li>
-                        <li><a href="#" class="hover:text-cyanGlow transition-colors flex items-center gap-2"><i data-lucide="linkedin" class="w-4 h-4"></i> LinkedIn</a></li>
-                        <li><a href="#" class="hover:text-cyanGlow transition-colors flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4"></i> Email</a></li>
+                        <li><a href="#" class="hover:text-cyanGlow transition-colors flex items-center gap-2"><i
+                                    data-lucide="facebook" class="w-4 h-4"></i> Facebook</a></li>
+                        <li><a href="#" class="hover:text-cyanGlow transition-colors flex items-center gap-2"><i
+                                    data-lucide="instagram" class="w-4 h-4"></i> Instagram</a></li>
+                        <li><a href="#" class="hover:text-cyanGlow transition-colors flex items-center gap-2"><i
+                                    data-lucide="linkedin" class="w-4 h-4"></i> LinkedIn</a></li>
+                        <li><a href="#" class="hover:text-cyanGlow transition-colors flex items-center gap-2"><i
+                                    data-lucide="mail" class="w-4 h-4"></i> Email</a></li>
                     </ul>
                 </div>
             </div>
-            
+
             <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-xs text-gray-500">© 2026 CuriosityOS Bangladesh. All rights reserved.</p>
+                <p class="text-xs text-gray-500">© 2026 CuriosityOS Institute of Research & Learning (CIRL). All rights
+                    reserved.</p>
                 <div class="flex gap-4 text-xs text-gray-500">
                     <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
                     <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
@@ -740,39 +926,39 @@ By combining research, technology, projects and community collaboration, Curiosi
     <!-- Scripts -->
     <script>
         // 1. Create the bridge to the backpack
-const pb = new PocketBase('http://127.0.0.1:8090');
+        const pb = new PocketBase('http://127.0.0.1:8090');
 
-// 2. This function grabs your numbers from the backpack and shows them
-async function getMyNumbers() {
-    try {
-        // Look in the 'student_analytics' notebook for the newest numbers
-        const record = await pb.collection('student_analytics').getFirstListItem('', {
-            sort: '-created',
-        });
+        // 2. This function grabs your numbers from the backpack and shows them
+        async function getMyNumbers() {
+            try {
+                // Look in the 'student_analytics' notebook for the newest numbers
+                const record = await pb.collection('student_analytics').getFirstListItem('', {
+                    sort: '-created',
+                });
 
-        if (record) {
-            // Update Curiosity Score (82)
-            const scoreEl = document.querySelector('[data-target="82"]');
-            scoreEl.innerText = record.curiosity_score;
-            scoreEl.setAttribute('data-target', record.curiosity_score);
+                if (record) {
+                    // Update Curiosity Score (82)
+                    const scoreEl = document.querySelector('[data-target="82"]');
+                    scoreEl.innerText = record.curiosity_score;
+                    scoreEl.setAttribute('data-target', record.curiosity_score);
 
-            // Update Weekly Questions (23)
-            const questionsEl = document.querySelector('[data-target="23"]');
-            questionsEl.innerText = record.total_questions;
-            questionsEl.setAttribute('data-target', record.total_questions);
+                    // Update Weekly Questions (23)
+                    const questionsEl = document.querySelector('[data-target="23"]');
+                    questionsEl.innerText = record.total_questions;
+                    questionsEl.setAttribute('data-target', record.total_questions);
 
-            // Update Learning Time (14)
-            const timeEl = document.querySelector('[data-target="14"]');
-            timeEl.innerText = record.learning_hours;
-            timeEl.setAttribute('data-target', record.learning_hours);
+                    // Update Learning Time (14)
+                    const timeEl = document.querySelector('[data-target="14"]');
+                    timeEl.innerText = record.learning_hours;
+                    timeEl.setAttribute('data-target', record.learning_hours);
+                }
+            } catch (err) {
+                console.log("No data found in PocketBase yet, using the default toy numbers!");
+            }
         }
-    } catch (err) {
-        console.log("No data found in PocketBase yet, using the default toy numbers!");
-    }
-}
 
-// 3. Run this immediately so the numbers update as soon as the page opens
-getMyNumbers();
+        // 3. Run this immediately so the numbers update as soon as the page opens
+        getMyNumbers();
         // Initialize Lucide Icons
         lucide.createIcons();
 
@@ -824,16 +1010,16 @@ getMyNumbers();
 
         function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
+
             for (let i = 0; i < particles.length; i++) {
                 particles[i].update();
                 particles[i].draw();
-                
+
                 for (let j = i; j < particles.length; j++) {
                     const dx = particles[i].x - particles[j].x;
                     const dy = particles[i].y - particles[j].y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
-                    
+
                     if (distance < connectionDistance) {
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
@@ -876,19 +1062,19 @@ getMyNumbers();
         }
 
         function animateIntroParticles() {
-            if(document.getElementById('intro-overlay').style.display === 'none') return;
-            
+            if (document.getElementById('intro-overlay').style.display === 'none') return;
+
             introCtx.clearRect(0, 0, introCanvas.width, introCanvas.height);
-            
+
             for (let i = 0; i < introParticles.length; i++) {
                 introParticles[i].update();
                 introParticles[i].draw();
-                
+
                 for (let j = i; j < introParticles.length; j++) {
                     const dx = introParticles[i].x - introParticles[j].x;
                     const dy = introParticles[i].y - introParticles[j].y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
-                    
+
                     if (distance < 100) {
                         introCtx.beginPath();
                         introCtx.moveTo(introParticles[i].x, introParticles[i].y);
@@ -920,7 +1106,7 @@ getMyNumbers();
 
         // Intro Sequence
         const tl = gsap.timeline();
-        
+
         tl.to("#intro-title", {
             opacity: 1,
             scale: 1,
@@ -928,23 +1114,23 @@ getMyNumbers();
             ease: "power3.out",
             delay: 0.5
         })
-        .to("#intro-subtitle", {
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            ease: "power2.out"
-        }, "-=0.5")
-        .to("#intro-overlay", {
-            yPercent: -100,
-            duration: 1.2,
-            ease: "power4.inOut",
-            delay: 1.5,
-            onComplete: () => {
-                document.getElementById('intro-overlay').style.display = 'none';
-                // Trigger scroll animations after intro
-                ScrollTrigger.refresh();
-            }
-        });
+            .to("#intro-subtitle", {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power2.out"
+            }, "-=0.5")
+            .to("#intro-overlay", {
+                yPercent: -100,
+                duration: 1.2,
+                ease: "power4.inOut",
+                delay: 1.5,
+                onComplete: () => {
+                    document.getElementById('intro-overlay').style.display = 'none';
+                    // Trigger scroll animations after intro
+                    ScrollTrigger.refresh();
+                }
+            });
 
         // Navbar blur effect on scroll
         window.addEventListener('scroll', () => {
@@ -1065,11 +1251,11 @@ getMyNumbers();
         function addMessage(text, isUser) {
             const msgDiv = document.createElement('div');
             msgDiv.className = `flex gap-3 max-w-[85%] ${isUser ? 'self-end flex-row-reverse' : ''}`;
-            
-            const iconHtml = isUser 
+
+            const iconHtml = isUser
                 ? `<div class="w-8 h-8 rounded-full bg-curiosityOrange/20 flex-shrink-0 flex items-center justify-center border border-curiosityOrange/50 mt-1"><i data-lucide="user" class="text-curiosityOrange w-4 h-4"></i></div>`
                 : `<div class="w-8 h-8 rounded-full bg-cyanGlow/20 flex-shrink-0 flex items-center justify-center border border-cyanGlow/50 mt-1"><i data-lucide="cpu" class="text-cyanGlow w-4 h-4"></i></div>`;
-            
+
             const bubbleClass = isUser
                 ? `bg-curiosityOrange/20 border border-curiosityOrange/30 rounded-2xl rounded-tr-none p-3 text-sm text-white`
                 : `bg-white/5 border border-white/10 rounded-2xl rounded-tl-none p-3 text-sm text-gray-200`;
@@ -1078,10 +1264,10 @@ getMyNumbers();
                 ${iconHtml}
                 <div class="${bubbleClass}">${text}</div>
             `;
-            
+
             chatMessages.appendChild(msgDiv);
             lucide.createIcons({ root: msgDiv });
-            
+
             // Scroll to bottom
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
@@ -1096,107 +1282,142 @@ getMyNumbers();
             return mockResponses[mockResponses.length - 1].response;
         }
         // This tells the website to wait for the backpack to save the message
-chatForm.addEventListener('submit', async (e) => { 
-    e.preventDefault();
-    const text = chatInput.value.trim();
-    if (!text) return;
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if (!text) return;
 
-    // Show your message on the screen
-    addMessage(text, true);
-    
-    // --- SAVING TO BACKPACK ---
-    try {
-        await pb.collection('chat_logs').create({
-            user_query: text
+            // Show your message on the screen
+            addMessage(text, true);
+
+            // --- SAVING TO BACKPACK ---
+            try {
+                await pb.collection('chat_logs').create({
+                    user_query: text
+                });
+            } catch (err) {
+                console.log("Could not save to the backpack!");
+            }
+            // --------------------------
+
+            chatInput.value = '';
+
+            // The AI takes a second to think, then answers
+            setTimeout(() => {
+                const response = getBotResponse(text);
+                addMessage(response, false);
+            }, 1000 + Math.random() * 1000);
         });
-    } catch(err) {
-        console.log("Could not save to the backpack!");
-    }
-    // --------------------------
-
-    chatInput.value = '';
-
-    // The AI takes a second to think, then answers
-    setTimeout(() => {
-        const response = getBotResponse(text);
-        addMessage(response, false);
-    }, 1000 + Math.random() * 1000);
-});
 
         // --- Mobile Menu Logic ---
+        // --- 1. Unified Auth Logic (Desktop & Mobile) ---
+        function updateNavAuth() {
+            // Target Desktop Elements
+            const desktopLoginBtn = document.getElementById('nav-login-btn');
+            const desktopProfile = document.getElementById('nav-user-profile');
+            const desktopName = document.getElementById('user-name');
+            const desktopAvatar = document.getElementById('user-avatar');
+
+            // Target Mobile Elements
+            const mobileLoginBtn = document.getElementById('mobile-login-btn');
+            const mobileProfile = document.getElementById('mobile-user-profile');
+            const mobileName = document.getElementById('mobile-user-name');
+            const mobileAvatar = document.getElementById('mobile-user-avatar');
+
+            if (pb.authStore.isValid) {
+                const user = pb.authStore.model;
+                const displayName = user.name || user.username || "Member";
+                const avatarUrl = user.avatar
+                    ? pb.files.getUrl(user, user.avatar)
+                    : "https://www.w3schools.com/howto/img_avatar.png";
+
+                // Update Desktop View
+                if (desktopLoginBtn) desktopLoginBtn.classList.add('hidden');
+                if (desktopProfile) desktopProfile.classList.remove('hidden');
+                if (desktopName) desktopName.textContent = displayName;
+                if (desktopAvatar) desktopAvatar.src = avatarUrl;
+
+                // Update Mobile View
+                if (mobileLoginBtn) mobileLoginBtn.classList.add('hidden');
+                if (mobileProfile) mobileProfile.classList.remove('hidden');
+                if (mobileName) mobileName.textContent = displayName;
+                if (mobileAvatar) mobileAvatar.src = avatarUrl;
+            } else {
+                // Keep UI clean if logged out
+                if (desktopLoginBtn) desktopLoginBtn.classList.remove('hidden');
+                if (desktopProfile) desktopProfile.classList.add('hidden');
+                if (mobileLoginBtn) mobileLoginBtn.classList.remove('hidden');
+                if (mobileProfile) mobileProfile.classList.add('hidden');
+            }
+        }
+
+        // Standard Logout Function
+        function logout() {
+            pb.authStore.clear();
+            window.location.reload();
+        }
+
+        // --- 2. Unified Mobile Menu Overlay Logic ---
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenuCloseBtn = document.getElementById('menu-close-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         const mobileLinks = document.querySelectorAll('.mobile-link');
-        // 1. The Auth Brain
-function updateNavAuth() {
-    const userProfile = document.getElementById('nav-user-profile');
-    const loginBtn = document.getElementById('nav-login-btn');
-    const userName = document.getElementById('user-name');
-    const userAvatar = document.getElementById('user-avatar');
 
-    if (pb.authStore.isValid) {
-        const user = pb.authStore.model;
-        loginBtn?.classList.add('hidden');
-        userProfile?.classList.remove('hidden');
-        userName.textContent = user.name || user.username || "Member";
+        // Clean open and close functions (No conflicting icon logic)
+        function openMenu() {
+            mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
+            mobileMenu.classList.add('opacity-100', 'pointer-events-auto');
+            document.body.style.overflow = 'hidden'; // Prevents background scroll
+        }
 
-        // CLEAN DEFAULT: Shows your photo OR a professional WhatsApp-style icon
-        userAvatar.src = user.avatar 
-            ? pb.files.getUrl(user, user.avatar) 
-            : "https://www.w3schools.com/howto/img_avatar.png";
-    }
-}
+        function closeMenu() {
+            mobileMenu.classList.add('opacity-0', 'pointer-events-none');
+            mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
+            document.body.style.overflow = ''; // Restores scroll
+        }
 
-// 2. The Modal Controls (MISSING IN YOUR SS)
-function openSettings() {
-    const user = pb.authStore.model;
-    document.getElementById('edit-name').value = user.name || "";
-    document.getElementById('edit-avatar-preview').src = user.avatar 
-        ? pb.files.getUrl(user, user.avatar) 
-        : "https://www.w3schools.com/howto/img_avatar.png";
-    
-    const modal = document.getElementById('settings-modal');
-    modal.classList.remove('hidden');
-    setTimeout(() => modal.classList.add('opacity-100'), 10);
-}
+        // Attach listeners
+        if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openMenu);
+        if (mobileMenuCloseBtn) mobileMenuCloseBtn.addEventListener('click', closeMenu);
 
-function closeSettings() {
-    const modal = document.getElementById('settings-modal');
-    modal.classList.remove('opacity-100');
-    setTimeout(() => modal.classList.add('hidden'), 300);
-}
+        // Closes the menu automatically if a link is clicked
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
 
-// 3. Save Logic (MISSING IN YOUR SS)
-document.getElementById('edit-profile-form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = document.getElementById('save-btn');
-    btn.innerText = "Saving...";
-    
-    const formData = new FormData();
-    formData.append('name', document.getElementById('edit-name').value);
-    const file = document.getElementById('avatar-input').files[0];
-    if (file) formData.append('avatar', file);
+        // --- 3. Run on Load ---
+        updateNavAuth();
+        // 3. Save Logic (MISSING IN YOUR SS)
+        document.getElementById('edit-profile-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('save-btn');
+            btn.innerText = "Saving...";
 
-    try {
-        await pb.collection('users').update(pb.authStore.model.id, formData);
-        window.location.reload();
-    } catch (err) {
-        alert("Error: " + err.message);
-        btn.innerText = "Save Changes";
-    }
-});
+            const formData = new FormData();
+            formData.append('name', document.getElementById('edit-name').value);
+            const file = document.getElementById('avatar-input').files[0];
+            if (file) formData.append('avatar', file);
 
-function previewImage(event) {
-    const reader = new FileReader();
-    reader.onload = () => document.getElementById('edit-avatar-preview').src = reader.result;
-    reader.readAsDataURL(event.target.files[0]);
-}
+            try {
+                await pb.collection('users').update(pb.authStore.model.id, formData);
+                window.location.reload();
+            } catch (err) {
+                alert("Error: " + err.message);
+                btn.innerText = "Save Changes";
+            }
+        });
 
-function logout() {
-    pb.authStore.clear();
-    window.location.reload();
-}
-        
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = () => document.getElementById('edit-avatar-preview').src = reader.result;
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function logout() {
+            pb.authStore.clear();
+            window.location.reload();
+        }
+
         let isMenuOpen = false;
 
         function toggleMenu() {
@@ -1216,66 +1437,130 @@ function logout() {
         }
 
         mobileMenuBtn.addEventListener('click', toggleMenu);
-        
+
         mobileLinks.forEach(link => {
             link.addEventListener('click', () => {
-                if(isMenuOpen) toggleMenu();
+                if (isMenuOpen) toggleMenu();
             });
         });
 
         // FAQ Accordion Animation Logic
-document.querySelectorAll('.faq-trigger').forEach(trigger => {
-    trigger.addEventListener('click', () => {
-        const content = trigger.nextElementSibling;
-        const icon = trigger.querySelector('[data-lucide]');
-        const isOpen = content.classList.contains('is-open');
+        document.querySelectorAll('.faq-trigger').forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const content = trigger.nextElementSibling;
+                const icon = trigger.querySelector('[data-lucide]');
+                const isOpen = content.classList.contains('is-open');
 
-        // Close other open questions
-        document.querySelectorAll('.faq-content.is-open').forEach(openContent => {
-            if (openContent !== content) {
-                gsap.to(openContent, { maxHeight: 0, opacity: 0, duration: 0.4, ease: "power2.inOut" });
-                gsap.to(openContent.previousElementSibling.querySelector('[data-lucide]'), { rotation: 0 });
-                openContent.classList.remove('is-open');
-            }
+                // Close other open questions
+                document.querySelectorAll('.faq-content.is-open').forEach(openContent => {
+                    if (openContent !== content) {
+                        gsap.to(openContent, { maxHeight: 0, opacity: 0, duration: 0.4, ease: "power2.inOut" });
+                        gsap.to(openContent.previousElementSibling.querySelector('[data-lucide]'), { rotation: 0 });
+                        openContent.classList.remove('is-open');
+                    }
+                });
+
+                // Toggle current question
+                if (!isOpen) {
+                    gsap.to(content, { maxHeight: 500, opacity: 1, duration: 0.5, ease: "power2.out" });
+                    gsap.to(icon, { rotation: 180, duration: 0.3 });
+                    content.classList.add('is-open');
+                } else {
+                    gsap.to(content, { maxHeight: 0, opacity: 0, duration: 0.4, ease: "power2.inOut" });
+                    gsap.to(icon, { rotation: 0, duration: 0.3 });
+                    content.classList.remove('is-open');
+                }
+            });
         });
 
-        // Toggle current question
-        if (!isOpen) {
-            gsap.to(content, { maxHeight: 500, opacity: 1, duration: 0.5, ease: "power2.out" });
-            gsap.to(icon, { rotation: 180, duration: 0.3 });
-            content.classList.add('is-open');
-        } else {
-            gsap.to(content, { maxHeight: 0, opacity: 0, duration: 0.4, ease: "power2.inOut" });
-            gsap.to(icon, { rotation: 0, duration: 0.3 });
-            content.classList.remove('is-open');
+        // 1. Define functions FIRST
+        function openSettings() {
+            console.log("Button clicked!");
+            const modal = document.getElementById('settings-modal');
+            if (!modal) return console.error("Modal div not found! Check if the HTML is above this script.");
+
+            const user = pb.authStore.model;
+            document.getElementById('edit-name').value = user.name || user.username || "";
+
+            modal.classList.remove('hidden');
+            gsap.to(modal, { opacity: 1, duration: 0.4, ease: "power2.out" });
         }
-    });
-});
 
-// 1. Define functions FIRST
-function openSettings() {
-    console.log("Button clicked!"); 
-    const modal = document.getElementById('settings-modal');
-    if (!modal) return console.error("Modal div not found! Check if the HTML is above this script.");
-    
-    const user = pb.authStore.model;
-    document.getElementById('edit-name').value = user.name || user.username || "";
-    
-    modal.classList.remove('hidden');
-    gsap.to(modal, { opacity: 1, duration: 0.4, ease: "power2.out" });
-}
+        function closeSettings() {
+            const modal = document.getElementById('settings-modal');
+            gsap.to(modal, {
+                opacity: 0,
+                duration: 0.3,
+                onComplete: () => modal.classList.add('hidden')
+            });
+        }
 
-function closeSettings() {
-    const modal = document.getElementById('settings-modal');
-    gsap.to(modal, { 
-        opacity: 0, 
-        duration: 0.3, 
-        onComplete: () => modal.classList.add('hidden') 
-    });
-}
+        // 2. Call the init function LAST
+        updateNavAuth();
 
-// 2. Call the init function LAST
-updateNavAuth();
-       </script>
+        function closeSettings() {
+            const modal = document.getElementById('settings-modal');
+            gsap.to(modal, {
+                opacity: 0,
+                duration: 0.3,
+                onComplete: () => modal.classList.add('hidden')
+            });
+        }
+
+        // --- PASTE STEP 3 CODE HERE ---
+
+        function checkAccess(destination) {
+            if (pb.authStore.isValid) {
+                window.location.href = `dashboard.html?section=${destination}`;
+            } else {
+                openModal();
+            }
+        }
+
+        function openModal() {
+            const modal = document.getElementById('login-modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            gsap.to(modal, { opacity: 1, duration: 0.4, ease: "power2.out" });
+            gsap.to(content, { scale: 1, duration: 0.5, ease: "back.out(1.7)" });
+            lucide.createIcons({ root: modal });
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('login-modal');
+            const content = document.getElementById('modal-content');
+            gsap.to(content, { scale: 0.9, duration: 0.3 });
+            gsap.to(modal, {
+                opacity: 0,
+                duration: 0.3,
+                onComplete: () => modal.classList.add('hidden')
+            });
+        }
+    </script>
+    <div id="login-modal"
+        class="fixed inset-0 bg-darkNavy/90 backdrop-blur-md hidden flex items-center justify-center z-[10000] p-4 opacity-0">
+        <div id="modal-content"
+            class="glass-panel rounded-3xl p-8 max-w-md w-full text-center shadow-2xl border-cyanGlow/20 transform scale-90">
+            <div
+                class="w-16 h-16 bg-cyanGlow/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-cyanGlow/30">
+                <i data-lucide="lock" class="text-cyanGlow w-8 h-8"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-2 font-heading">Access Restricted</h2>
+            <p class="text-gray-400 mb-8 text-sm">Please join the CuriosityOS community or log in to view your
+                personalized learning metrics and dashboard.</p>
+            <div class="space-y-3">
+                <a href="auth.html"
+                    class="block w-full bg-cyanGlow text-scienceBlue py-4 rounded-xl font-bold hover:shadow-[0_0_20px_rgba(0,229,255,0.4)] transition-all text-center">
+                    Go to Login Page
+                </a>
+                <button onclick="closeModal()"
+                    class="w-full text-gray-500 text-xs py-2 hover:text-white transition-colors uppercase tracking-widest">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
+</body>
+
 </html>

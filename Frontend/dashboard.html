@@ -3,267 +3,749 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CuriosityOS | Dashboard</title>
-    
+    <title>CuriosityOS Student Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/pocketbase/dist/pocketbase.umd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        cyanGlow: '#22d3ee',
-                        scienceBlue: '#020617',
-                    }
-                }
-            }
-        }
-    </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #020617; color: white; }
-        .glass-panel { 
-            background: rgba(15, 23, 42, 0.6); 
-            border: 1px solid rgba(255, 255, 255, 0.05); 
-            backdrop-filter: blur(10px);
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030712;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+        }
+        .text-glow {
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.5), 0 0 20px rgba(34, 211, 238, 0.3);
+        }
+        .box-glow {
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
+        }
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #22D3EE;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 0 10px #22D3EE;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #030712;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .sparkline {
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
     </style>
 </head>
-<body class="antialiased selection:bg-cyanGlow selection:text-scienceBlue p-4 md:p-8">
+<body class="antialiased selection:bg-cyan-500/30">
 
-    <nav class="flex justify-between items-center mb-12 max-w-7xl mx-auto">
-        <div class="flex items-center gap-2 text-cyanGlow font-bold text-2xl tracking-tight">
-            <i data-lucide="atom"></i> CuriosityOS
-        </div>
-        <div class="flex gap-6 text-sm font-medium text-gray-300 items-center">
-            <a href="index.html" class="hover:text-cyanGlow transition-colors">HOME</a>
-            <button onclick="logout()" class="px-4 py-2 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-all">Logout</button>
+    <!-- Cinematic Entrance -->
+    <div id="loader">
+        <h1 id="loader-text" class="text-4xl md:text-6xl font-bold italic text-cyan-400 text-glow opacity-0 tracking-wider">
+            CURIOSITYOS
+        </h1>
+    </div>
+
+    <!-- Canvas Background -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-card border-b-0 rounded-none px-6 py-4 flex justify-between items-center">
+        <div class="text-xl font-bold italic text-white-400 tracking-wide">CuriosityOS</div>
+        <button id="menu-btn" class="text-white focus:outline-none md:hidden">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <div class="hidden md:flex space-x-8 text-sm font-medium text-gray-300">
+            <a href="#dashboard" class="hover:text-cyan-400 transition-colors">Dashboard</a>
+            <a href="#insights" class="hover:text-cyan-400 transition-colors">Insights</a>
+            <a href="#gamification" class="hover:text-cyan-400 transition-colors">Achievements</a>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto">
-        <div class="mb-10">
-            <h1 class="text-4xl font-bold mb-2">Student Performance Platform</h1>
-            <p class="text-gray-400">Welcome back! Please update your latest academic telemetry below.</p>
-        </div>
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-[#030712]/95 backdrop-blur-md z-40 hidden flex-col items-center justify-center space-y-8 text-2xl">
+        <a href="#dashboard" class="hover:text-cyan-400 transition-colors menu-link">Dashboard</a>
+        <a href="#insights" class="hover:text-cyan-400 transition-colors menu-link">Insights</a>
+        <a href="#gamification" class="hover:text-cyan-400 transition-colors menu-link">Achievements</a>
+    </div>
 
-        <div class="glass-panel p-6 rounded-2xl mb-8 opacity-0" id="form-container">
-            <h3 class="text-cyanGlow font-bold mb-4 uppercase tracking-widest text-xs">Student Information & Progress</h3>
-            <form id="dailyForm" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-                <div class="flex flex-col gap-2">
-                    <label class="text-[10px] text-gray-500 uppercase font-bold">Full Name</label>
-                    <input type="text" id="nameIn" placeholder="Enter Name" required class="bg-black/40 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow transition-colors">
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label class="text-[10px] text-gray-500 uppercase font-bold">Class/Grade</label>
-                    <input type="text" id="classIn" placeholder="Class" required class="bg-black/40 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow transition-colors">
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label class="text-[10px] text-gray-500 uppercase font-bold">Study Hours</label>
-                    <input type="number" id="studyIn" placeholder="0" required class="bg-black/40 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow transition-colors">
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label class="text-[10px] text-gray-500 uppercase font-bold">Curiosity Index</label>
-                    <input type="number" id="scoreIn" placeholder="0-100" required class="bg-black/40 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow transition-colors">
-                </div>
-                <button type="submit" id="saveBtn" class="bg-cyanGlow text-scienceBlue font-bold py-3 rounded-lg hover:brightness-110 transition-all h-[50px]">
-                    Update Stats
-                </button>
-            </form>
-        </div>
+    <main class="pt-24 pb-12 px-4 md:px-8 max-w-7xl mx-auto">
+        
+        <!-- Hero Section -->
+        <section id="hero" class="py-12 md:py-20 text-center opacity-0 transform translate-y-10">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
+                Analyze Your Overall Performance
+            </h1>
+            <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
+                Track, Visualize, and Improve Your Curiosity, Discipline, and Thinking Skills.
+            </p>
+        </section>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="space-y-6">
-                <div class="glass-panel p-6 rounded-2xl opacity-0 stat-card border-l-4 border-l-cyanGlow">
-                    <h3 class="text-xs font-bold text-gray-400 tracking-wider uppercase mb-1">Active Profile</h3>
-                    <div class="text-2xl font-bold" id="user-name-display">Guest Student</div>
-                    <div class="text-sm text-cyanGlow" id="user-class-display">Class Not Set</div>
-                    <button onclick="toggleModal()" class="mt-4 flex items-center gap-2 text-[10px] font-bold text-cyanGlow border border-cyanGlow/30 px-3 py-2 rounded-lg hover:bg-cyanGlow/10 transition-all uppercase tracking-widest">
-                        <i data-lucide="edit-3" class="w-3 h-3"></i>
-                        Edit Profile
-                    </button>
-                </div>
+        <!-- Indices Section -->
+        <section id="indices" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 opacity-0">
+            <!-- Rendered via JS -->
+        </section>
 
-                <div class="glass-panel p-6 rounded-2xl opacity-0 stat-card">
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="text-xs font-bold text-gray-400 tracking-wider uppercase">Current Score</h3>
-                        <i data-lucide="trending-up" class="text-cyanGlow w-5 h-5"></i>
-                    </div>
-                    <div class="flex items-baseline gap-2">
-                        <span class="text-5xl font-bold text-white" id="score-display">0</span>
-                    </div>
-                </div>
+        <!-- Metrics Section -->
+        <section id="dashboard" class="mb-12">
+            <h2 class="text-2xl font-semibold mb-6 text-cyan-400 border-b border-white/10 pb-2">Performance Metrics</h2>
+            <div id="metrics-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Rendered via JS -->
             </div>
-
-            <div class="lg:col-span-2 glass-panel p-6 rounded-2xl opacity-0" id="chart-container">
-                <h3 class="font-bold text-lg mb-6">Performance Trend</h3>
-                <div class="w-full h-64">
-                    <canvas id="growthChart"></canvas>
+        </section>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Insights Section -->
+          <section id="insights" class="glass-card p-6 opacity-0">
+                <h2 class="text-xl font-semibold mb-4 text-cyan-400 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    AI Insights
+                </h2>
+                <div id="insights-content" class="space-y-4">
+                    <!-- Rendered via JS -->
                 </div>
-            </div>
+            </section>
+
+
+            <!-- Gamification Section -->
+            <section id="gamification" class="glass-card p-6 opacity-0">
+                <h2 class="text-xl font-semibold mb-4 text-cyan-400 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                    Achievements & Streak
+                </h2>
+                <div class="flex items-center justify-between mb-6 bg-white/5 rounded-lg p-4">
+                    <div>
+                        <p class="text-sm text-gray-400">Current Streak</p>
+                        <p class="text-2xl font-bold text-white"><span id="streak-count"></span></p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-400"></p>
+                        <p class="text-sm font-semibold text-cyan-400">Consistency Is The Key.</p>
+                    </div>
+                </div>
+                <div id="badges-container" class="grid grid-cols-3 gap-4">
+                    <!-- Rendered via JS -->
+                </div>
+            </section>
         </div>
+          </div>
+        </section>
+
+        <div>
+
     </main>
-    <div id="profileModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4">
-    <div class="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 rounded-3xl border border-white/10">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-cyanGlow">Edit Profile</h2>
-            <button onclick="toggleModal()" class="text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
+
+      </div>
+        </section>
+
+        <div class="col-span-full bg-[#0B1121]/80 backdrop-blur-xl border border-white/10 p-6 rounded-3xl shadow-2xl transition-all duration-500 hover:border-cyan-500/30">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h3 class="text-xl font-bold text-white tracking-tight">Daily Wellness Graph</h3>
+            <p class="text-gray-400 text-[10px] font-mono uppercase tracking-widest mt-1">Scale: 1.0 — 10.0</p>
         </div>
+        <div class="text-right">
+            <span class="text-xs font-bold text-cyan-400 uppercase tracking-tighter animate-pulse">● Performance  Live</span>
+        </div>
+    </div>
 
-        <form id="profileForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="md:col-span-2 flex flex-col items-center mb-4">
-                <label class="cursor-pointer group relative">
-                    <div class="w-24 h-24 rounded-full border-2 border-dashed border-cyanGlow/50 flex items-center justify-center overflow-hidden">
-                        <img id="avatarPreview" src="https://via.placeholder.com/150" class="w-full h-full object-cover hidden">
-                        <i data-lucide="camera" class="text-cyanGlow group-hover:scale-110 transition-transform"></i>
-                    </div>
-                    <input type="file" id="avatarIn" class="hidden" accept="image/*">
-                </label>
-                <span class="text-[10px] text-gray-500 mt-2 uppercase">Upload Profile Picture</span>
-            </div>
-
-            <input type="text" id="profName" placeholder="Full Name" class="bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow">
-            <input type="text" id="profClass" placeholder="Class / Standard" class="bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow">
-            <input type="text" id="profInst" placeholder="Institution Name" class="bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow">
-            <input type="text" id="profRole" placeholder="Role" class="bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow">
-            <textarea id="profBio" placeholder="Short Bio" class="md:col-span-2 bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white h-24 outline-none focus:border-cyanGlow"></textarea>
-
-            <div class="md:col-span-2 border-t border-white/5 pt-4">
-                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Social Connections</h3>
-            </div>
-            <input type="url" id="fbLink" placeholder="Facebook URL" class="bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow">
-            <input type="url" id="instaLink" placeholder="Instagram URL" class="bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow">
-            <input type="url" id="liLink" placeholder="LinkedIn URL" class="bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow">
-            <input type="url" id="ghLink" placeholder="GitHub URL" class="bg-slate-900/50 border border-white/10 p-3 rounded-lg text-white outline-none focus:border-cyanGlow">
-
-            <button type="submit" class="md:col-span-2 bg-cyanGlow text-scienceBlue font-bold py-3 rounded-xl hover:scale-[1.02] transition-transform">Save Profile</button>
-        </form>
+    <div class="relative h-[350px] w-full">
+        <canvas id="performanceHistogram"></canvas>
     </div>
 </div>
 
     <script>
-        lucide.createIcons();
-        const pb = new PocketBase('http://127.0.0.1:8090');
+        // --- Data & State ---
+        const metricsData = [
+            { id: 'sleep', name: 'Sleep', value: 7.5, max: 12, unit: 'hrs', category: 'discipline', inverse: false },
+            { id: 'screen', name: 'Screen Time', value: 4.2, max: 16, unit: 'hrs', category: 'discipline', inverse: true },
+            { id: 'study', name: 'Study Hours', value: 5.0, max: 12, unit: 'hrs', category: 'thinking', inverse: false },
+            { id: 'curiosity', name: 'Curiosity', value: 8.2, max: 10, unit: 'pts', category: 'curiosity', inverse: false },
+            { id: 'critical', name: 'Critical Thinking', value: 7.0, max: 10, unit: 'pts', category: 'thinking', inverse: false },
+            { id: 'analytical', name: 'Analytical Skills', value: 7.5, max: 10, unit: 'pts', category: 'thinking', inverse: false },
+            { id: 'physical', name: 'Physical Activity', value: 1.5, max: 5, unit: 'hrs', category: 'health', inverse: false },
+            { id: 'learning', name: 'Learning Output', value: 6.8, max: 10, unit: 'pts', category: 'curiosity', inverse: false },
+            { id: 'reading', name: 'Reading', value: 2.0, max: 5, unit: 'hrs', category: 'curiosity', inverse: false },
+            { id: 'habit', name: 'Habit Consistency', value: 8.5, max: 10, unit: 'pts', category: 'discipline', inverse: false },
+            { id: 'mood', name: 'Mood', value: 7.2, max: 10, unit: 'pts', category: 'health', inverse: false },
+            { id: 'social', name: 'Social Interaction', value: 6.0, max: 10, unit: 'pts', category: 'health', inverse: false },
+        ];
 
-        if (!pb.authStore.isValid) { window.location.href = "auth.html"; }
-        function logout() { pb.authStore.clear(); window.location.href = "auth.html"; }
-
-        // Animations
-        gsap.to("#form-container", { opacity: 1, y: 0, duration: 0.8 });
-        gsap.to(".stat-card", { opacity: 1, y: 0, duration: 0.8, stagger: 0.2 });
-        gsap.to("#chart-container", { opacity: 1, duration: 1, delay: 0.4 });
-
-        // Save Data Logic
-        document.getElementById('dailyForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('saveBtn');
-            btn.innerText = "Syncing...";
-            
-            const data = {
-                "name": document.getElementById('nameIn').value,
-                "class": document.getElementById('classIn').value,
-                "curiosity_score": document.getElementById('scoreIn').value,
-                "learning_hours": document.getElementById('studyIn').value,
-            };
-
-            try {
-                await pb.collection('students_analytics').create(data);
-                btn.innerText = "Data Synced!";
-                setTimeout(() => location.reload(), 800);
-            } catch (err) { 
-                alert("Upload failed. Check if your PocketBase collection has 'name' and 'class' fields!"); 
-                btn.innerText = "Update Stats";
-            }
+        // Generate mock history for sparklines
+        metricsData.forEach(m => {
+            m.history = Array.from({length: 7}, () => Math.max(0, Math.min(m.max, m.value + (Math.random() * 2 - 1))));
+            m.history.push(m.value);
         });
 
-        // Load Data Logic
-        async function loadDashboard() {
-            try {
-                const records = await pb.collection('students_analytics').getList(1, 7, { sort: '-created' });
-                
-                if (records.items.length > 0) {
-                    const latest = records.items[0];
-                    document.getElementById('user-name-display').innerText = latest.name || "Student";
-                    document.getElementById('user-class-display').innerText = "Class: " + (latest.class || "N/A");
+        const badges = [
+            { id: 'b1', name: 'Early Bird', icon: '🌅', earned: true },
+            { id: 'b2', name: 'Deep Thinker', icon: '🧠', earned: true },
+            { id: 'b3', name: 'Iron Discipline', icon: '🛡️', earned: false },
+            { id: 'b4', name: 'Polymath', icon: '🌌', earned: false },
+            { id: 'b5', name: 'Zen Master', icon: '🧘', earned: true },
+            { id: 'b6', name: 'Bookworm', icon: '📚', earned: false },
+        ];
+
+        // --- Utility Functions ---
+        const mapTo10 = (val, max, inverse) => {
+            let score = (val / max) * 10;
+            if (inverse) score = 10 - score;
+            return Math.max(0, Math.min(10, score));
+        };
+
+        const getColor = (score) => {
+            if (score >= 7.5) return '#22c55e'; // green-500
+            if (score >= 4.5) return '#eab308'; // yellow-500
+            return '#ef4444'; // red-500
+        };
+
+        const generateSparkline = (data, color) => {
+            const width = 100;
+            const height = 30;
+            const min = Math.min(...data);
+            const max = Math.max(...data);
+            const range = max - min || 1;
+            
+            const points = data.map((val, i) => {
+                const x = (i / (data.length - 1)) * width;
+                const y = height - ((val - min) / range) * height;
+                return `${x},${y}`;
+            }).join(' ');
+
+            return `<svg width="100%" height="100%" viewBox="0 -5 100 40" preserveAspectRatio="none">
+                <polyline class="sparkline" points="${points}" stroke="${color}" />
+            </svg>`;
+        };
+
+        // --- Render Functions ---
+        const renderMetrics = () => {
+            const container = document.getElementById('metrics-container');
+            container.innerHTML = '';
+
+            metricsData.forEach((metric, index) => {
+                const score10 = mapTo10(metric.value, metric.max, metric.inverse);
+                const color = getColor(score10);
+
+                const card = document.createElement('div');
+                card.className = 'glass-card p-5 flex flex-col relative overflow-hidden group';
+                card.innerHTML = `
+                    <div class="absolute top-0 left-0 w-1 h-full transition-colors duration-300" style="background-color: ${color}"></div>
+                    <div class="flex justify-between items-start mb-4 pl-2">
+                        <div>
+                            <h3 class="text-gray-300 font-medium">${metric.name}</h3>
+                            <div class="text-2xl font-bold text-white mt-1">
+                                <span id="val-${metric.id}">${metric.value.toFixed(1)}</span>
+                                <span class="text-sm text-gray-500 font-normal">${metric.unit}</span>
+                            </div>
+                        </div>
+                        <div class="w-20 h-10 opacity-70 group-hover:opacity-100 transition-opacity" id="spark-${metric.id}">
+                            ${generateSparkline(metric.history, color)}
+                        </div>
+                    </div>
+                    <div class="mt-auto pl-2">
+                        <input type="range" id="slider-${metric.id}" min="0" max="${metric.max}" step="${metric.max > 10 ? 0.5 : 0.1}" value="${metric.value}" 
+                            class="w-full" oninput="updateMetric('${metric.id}', this.value)">
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        };
+
+        const renderIndices = () => {
+            const container = document.getElementById('indices');
+            
+            // Calculate indices
+            let curSum = 0, curCount = 0;
+            let thiSum = 0, thiCount = 0;
+            let disSum = 0, disCount = 0;
+            let totalSum = 0;
+
+            metricsData.forEach(m => {
+                const score = mapTo10(m.value, m.max, m.inverse);
+                totalSum += score;
+                if (m.category === 'curiosity') { curSum += score; curCount++; }
+                if (m.category === 'thinking') { thiSum += score; thiCount++; }
+                if (m.category === 'discipline') { disSum += score; disCount++; }
+            });
+
+            const indices = [
+                { id: 'idx-overall', name: 'Overall Performance', value: totalSum / metricsData.length },
+                { id: 'idx-curiosity', name: 'Curiosity Index', value: curSum / curCount },
+                { id: 'idx-thinking', name: 'Thinking Index', value: thiSum / thiCount },
+                { id: 'idx-discipline', name: 'Discipline Index', value: disSum / disCount },
+            ];
+
+            // If container is empty, create elements, else update them
+            if (container.children.length === 0) {
+                indices.forEach(idx => {
+                    const color = getColor(idx.value);
+                    const card = document.createElement('div');
+                    card.className = 'glass-card p-6 text-center relative overflow-hidden';
+                    card.id = `card-${idx.id}`;
+                    card.style.background = `radial-gradient(circle at top right, ${color}15, rgba(10, 15, 30, 0.7) 60%)`;
                     
-                    gsap.to("#score-display", { innerHTML: latest.curiosity_score, duration: 1.5, snap: { innerHTML: 1 } });
+                    card.innerHTML = `
+                        <h3 class="text-gray-400 text-sm uppercase tracking-wider mb-2">${idx.name}</h3>
+                        <div class="text-4xl font-bold transition-colors duration-300" id="color-${idx.id}" style="color: ${color}">
+                            <span class="odometer" id="val-${idx.id}" data-val="${idx.value.toFixed(1)}">0.0</span>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
 
-                    // Build Chart
-                    const scores = records.items.map(r => r.curiosity_score).reverse();
-                    const labels = records.items.map(r => new Date(r.created).toLocaleDateString('en-US', {weekday: 'short'})).reverse();
-
-                    new Chart(document.getElementById('growthChart'), {
-                        type: 'line',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                data: scores,
-                                borderColor: '#22d3ee',
-                                backgroundColor: 'rgba(34, 211, 238, 0.1)',
-                                tension: 0.4,
-                                fill: true,
-                                pointRadius: 5
-                            }]
-                        },
-                        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+                // Initial Animate Odometers
+                gsap.utils.toArray('.odometer').forEach(el => {
+                    const target = parseFloat(el.getAttribute('data-val'));
+                    gsap.to(el, {
+                        innerHTML: target,
+                        duration: 1.5,
+                        ease: "power2.out",
+                        snap: { innerHTML: 0.1 },
+                        onUpdate: function() {
+                            el.innerHTML = parseFloat(this.targets()[0].innerHTML).toFixed(1);
+                        }
                     });
-                }
-            } catch (err) { console.log("First time? Add some data!"); }
-        }
-        loadDashboard();
-        // --- PROFILE EDIT LOGIC START ---
-        function toggleModal() {
-            document.getElementById('profileModal').classList.toggle('hidden');
-        }
+                });
+            } else {
+                // Update existing
+                indices.forEach(idx => {
+                    const color = getColor(idx.value);
+                    const el = document.getElementById(`val-${idx.id}`);
+                    const colorEl = document.getElementById(`color-${idx.id}`);
+                    const cardEl = document.getElementById(`card-${idx.id}`);
+                    
+                    if (colorEl) colorEl.style.color = color;
+                    if (cardEl) cardEl.style.background = `radial-gradient(circle at top right, ${color}15, rgba(10, 15, 30, 0.7) 60%)`;
+                    
+                    if (el) {
+                        const currentVal = parseFloat(el.innerHTML);
+                        gsap.to(el, {
+                            innerHTML: idx.value,
+                            duration: 0.5,
+                            ease: "power1.out",
+                            snap: { innerHTML: 0.1 },
+                            onUpdate: function() {
+                                el.innerHTML = parseFloat(this.targets()[0].innerHTML).toFixed(1);
+                            }
+                        });
+                    }
+                });
+            } 
+        };
 
-        document.getElementById('profileForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const user = pb.authStore.model;
-            const formData = new FormData();
-            
-            // Map HTML inputs to your PocketBase users collection fields
-            const fields = {
-                'name': 'profName', 
-                'class': 'profClass', 
-                'institution': 'profInst',
-                'role': 'profRole', 
-                'bio': 'profBio', 
-                'fb_link': 'fbLink',
-                'insta_link': 'instaLink', 
-                'linkedin_link': 'liLink', 
-                'github_link': 'ghLink'
-            };
+        const renderInsights = async () => {
+            const container = document.getElementById('insights-content');
+            container.innerHTML = '<div class="text-sm text-cyan-400 animate-pulse">Generating neural insights...</div>';
 
-            for (const [pbField, htmlId] of Object.entries(fields)) {
-                formData.append(pbField, document.getElementById(htmlId).value);
-            }
-
-            const fileInput = document.getElementById('avatarIn');
-            if (fileInput.files[0]) formData.append('avatar', fileInput.files[0]);
+            // Prepare the data for the AI
+            const currentStats = metricsData.map(m => `${m.name}: ${m.value}/${m.max}`).join(', ');
 
             try {
-                await pb.collection('users').update(user.id, formData);
-                alert("Profile Updated! ✨");
-                location.reload();
-            } catch (err) {
-                alert("Update failed: " + err.message);
+                // This is a placeholder for your backend endpoint (e.g., a simple Deno/Node bridge)
+                // For now, it logic-filters your data to simulate the "AI Research Assistant" 
+                const sorted = [...metricsData].sort((a, b) => mapTo10(a.value, a.max, a.inverse) - mapTo10(b.value, b.max, b.inverse));
+                const weak = sorted[0];
+                const strong = sorted[sorted.length - 1];
+
+                const insights = [
+                    `Neural Analysis: Your ${strong.name} is a key performance driver.`,
+                    `Optimization Required: Focus on ${weak.name} to balance your ${weak.category} index.`,
+                    `CuriosityOS Suggestion: Read 15 mins to boost your Analytical Skills.`
+                ];
+
+                container.innerHTML = '';
+                insights.forEach(text => {
+                    const div = document.createElement('div');
+                    div.className = 'p-3 bg-white/5 rounded-lg border border-white/10 text-sm text-gray-300 flex items-start opacity-0 translate-x-2';
+                    div.innerHTML = `<span class="text-cyan-400 mr-3 mt-0.5">✦</span><p>${text}</p>`;
+                    container.appendChild(div);
+                    gsap.to(div, { opacity: 1, x: 0, duration: 0.5 });
+                });
+            } catch (error) {
+                container.innerHTML = '<div class="text-sm text-red-400">Assistant offline. Check connection.</div>';
             }
+        };
+
+        const renderBadges = () => {
+            const container = document.getElementById('badges-container');
+            container.innerHTML = '';
+
+            // Map IDs to values for easier logic
+            const m = metricsData.reduce((acc, curr) => {
+                acc[curr.id] = curr.value;
+                return acc;
+            }, {});
+
+            const achievements = [
+                { id: 'b1', name: 'Early Bird', icon: '🌅', earned: (m.sleep >= 7) },
+                { id: 'b2', name: 'Deep Thinker', icon: '🧠', earned: (m.study >= 6 && m.critical >= 7) },
+                { id: 'b3', name: 'Iron Will', icon: '🛡️', earned: (m.screen <= 3 && m.habit >= 8) },
+                { id: 'b4', name: 'Polymath', icon: '🌌', earned: (m.learning >= 8 && m.analytical >= 8) },
+                { id: 'b5', name: 'Zen Master', icon: '🧘', earned: (m.mood >= 8 && m.social >= 6) },
+                { id: 'b6', name: 'Bookworm', icon: '📚', earned: (m.reading >= 3) },
+            ];
+
+            achievements.forEach(badge => {
+                const div = document.createElement('div');
+                div.className = `flex flex-col items-center p-3 rounded-xl border transition-all duration-500 ${badge.earned ? 'bg-cyan-900/20 border-cyan-500/30 box-glow opacity-100 scale-100' : 'bg-white/5 border-white/10 opacity-20 grayscale scale-95'}`;
+                div.innerHTML = `
+                    <div class="text-3xl mb-2">${badge.icon}</div>
+                    <div class="text-[10px] text-center font-bold uppercase tracking-tighter ${badge.earned ? 'text-cyan-300' : 'text-gray-500'}">${badge.name}</div>
+                `;
+                container.appendChild(div);
+            });
+        };
+
+        // --- Interaction Logic ---
+        window.updateMetric = (id, val) => {
+            const metric = metricsData.find(m => m.id === id);
+            if (metric) {
+                metric.value = parseFloat(val);
+                document.getElementById(`val-${id}`).innerText = metric.value.toFixed(1);
+                
+                metric.history[metric.history.length - 1] = metric.value;
+                
+                const score10 = mapTo10(metric.value, metric.max, metric.inverse);
+                const color = getColor(score10);
+                
+                const sparkContainer = document.getElementById(`spark-${id}`);
+                sparkContainer.innerHTML = generateSparkline(metric.history, color);
+                
+                const card = sparkContainer.closest('.glass-card');
+                card.querySelector('.absolute').style.backgroundColor = color;
+
+                clearTimeout(window.updateTimeout);
+                window.updateTimeout = setTimeout(() => {
+                    renderIndices();
+                    renderInsights();
+                    renderBadges(); // <--- ADD THIS LINE HERE
+                }, 100);
+            }
+        };
+
+        // --- Canvas Particles ---
+        const initCanvas = () => {
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+
+            const resize = () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            };
+
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                    this.radius = Math.random() * 1.5 + 0.5;
+                    this.alpha = Math.random() * 0.5 + 0.1;
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.x < 0 || this.x > width) this.vx *= -1;
+                    if (this.y < 0 || this.y > height) this.vy *= -1;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(34, 211, 238, ${this.alpha})`;
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < 100; i++) {
+                particles.push(new Particle());
+            }
+
+            const animate = () => {
+                ctx.clearRect(0, 0, width, height);
+                
+                // Draw connections
+                ctx.lineWidth = 0.5;
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (dist < 100) {
+                            ctx.strokeStyle = `rgba(34, 211, 238, ${0.1 * (1 - dist/100)})`;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+                requestAnimationFrame(animate);
+            };
+            animate();
+        };
+
+        // --- Initialization & Animations ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Menu Toggle
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuLinks = document.querySelectorAll('.menu-link');
+
+            const toggleMenu = () => {
+                mobileMenu.classList.toggle('hidden');
+                mobileMenu.classList.toggle('flex');
+                if (!mobileMenu.classList.contains('hidden')) {
+                    gsap.fromTo(menuLinks, {opacity: 0, y: 20}, {opacity: 1, y: 0, stagger: 0.1, duration: 0.4});
+                }
+            };
+
+            menuBtn.addEventListener('click', toggleMenu);
+            menuLinks.forEach(link => link.addEventListener('click', toggleMenu));
+
+            // Render Initial State
+            renderMetrics();
+            renderIndices();
+            renderInsights();
+            renderBadges();
+            initCanvas();
+
+            // Cinematic Entrance Sequence
+            const tl = gsap.timeline();
+            
+            tl.to('#loader-text', {
+                opacity: 1,
+                y: -20,
+                duration: 1.5,
+                ease: "power3.out"
+            })
+            .to('#loader-text', {
+                opacity: 0,
+                y: -40,
+                duration: 1,
+                delay: 0.5,
+                ease: "power2.in"
+            })
+            .to('#loader', {
+                yPercent: -100,
+                duration: 1.2,
+                ease: "expo.inOut"
+            }, "-=0.2")
+            .to('#hero', {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power3.out"
+            }, "-=0.5")
+            .to('#indices', {
+                opacity: 1,
+                duration: 1
+            }, "-=0.8")
+            .from('.glass-card', {
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.05,
+                ease: "back.out(1.2)",
+                clearProps: "all"
+            }, "-=0.5")
+            .to(['#insights', '#gamification'], {
+                opacity: 1,
+                duration: 0.5
+            }, "-=0.2");
+
+        });
+    </script>
+    <script>
+window.askAssistant = async () => {
+    const input = document.getElementById('ai-chat-input');
+    const container = document.getElementById('insights-content');
+    const userMessage = input.value.trim();
+    if (!userMessage) return;
+
+    // Add user message to UI...
+    const botDiv = document.createElement('div');
+    botDiv.className = 'p-3 bg-white/5 rounded-lg border border-white/10 text-sm text-gray-300 mr-8 mb-2';
+    botDiv.innerHTML = `<p>Connecting to bridge...</p>`;
+    container.appendChild(botDiv);
+
+    try {
+        const response = await fetch("https://curiosity-ai-bridge.prosun07a.workers.dev/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: userMessage })
         });
 
-        // Image Preview Logic
-        document.getElementById('avatarIn').onchange = () => {
-            const [file] = document.getElementById('avatarIn').files;
-            if (file) {
-                const preview = document.getElementById('avatarPreview');
-                preview.src = URL.createObjectURL(file);
-                preview.classList.remove('hidden');
+        const data = await response.json();
+        
+        // CHECK FOR BRIDGE ERRORS
+        if (data.bridge_error) {
+            botDiv.innerHTML = `<p class="text-red-400">Error: ${data.bridge_error}</p>`;
+            return;
+        }
+
+        const aiText = data.choices[0].message.content;
+        botDiv.innerHTML = `<p>${aiText}</p>`;
+
+    } catch (error) {
+        botDiv.innerHTML = `<p class="text-red-400">Connection failed. Is the Worker deployed?</p>`;
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Initialize the Chart Context
+    const ctx = document.getElementById('performanceHistogram').getContext('2d');
+    
+    // 2. Create the Neon Gradient for the bars
+    const barGradient = ctx.createLinearGradient(0, 0, 0, 350);
+    barGradient.addColorStop(0, '#06b6d4'); // CuriosityOS Cyan
+    barGradient.addColorStop(1, 'rgba(6, 182, 212, 0.05)'); // Fades to dark
+
+    // 3. Configure the Histogram (Bar Chart)
+    const performanceChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            // Your custom metrics as requested
+            labels: ['Overall Performance', 'Curiosity Index', 'Thinking Index', 'Discipline Index'],
+            datasets: [{
+                label: 'Rating',
+                data: [7, 5, 6, 8, 4], // Starting values
+                backgroundColor: barGradient,
+                borderColor: '#06b6d4',
+                borderWidth: 2,
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#0B1121',
+                    titleFont: { family: 'monospace' },
+                    bodyFont: { family: 'monospace' },
+                    displayColors: false,
+                    borderColor: 'rgba(6, 182, 212, 0.3)',
+                    borderWidth: 1
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { 
+                        color: '#94a3b8', 
+                        font: { family: 'monospace', size: 11 } 
+                    }
+                },
+                y: {
+                    // Y-axis strictly 0 to 10
+                    min: 0,
+                    max: 10,
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { 
+                        stepSize: 1,
+                        color: '#64748b', 
+                        font: { family: 'monospace' } 
+                    }
+                }
             }
         }
-        // --- PROFILE EDIT LOGIC END ---
-    </script>
+    });
+
+    // 4. The Reaction Engine: Updates bars when sliders move
+    window.updateHistogram = () => {
+        const sliders = document.querySelectorAll('input[type="range"]');
+        let newValues = [];
+        
+        // Collect current slider values
+        sliders.forEach(slider => {
+            newValues.push(parseFloat(slider.value) || 0);
+        });
+
+        // Push values to the chart
+        performanceChart.data.datasets[0].data = newValues;
+        
+        // Use 'none' for a snappy, zero-lag response during slider dragging
+        performanceChart.update('none'); 
+
+        // GSAP Micro-interaction for the container
+        gsap.to("#performanceHistogram", {
+            boxShadow: "0 0 20px rgba(6, 182, 212, 0.15)",
+            duration: 0.2,
+            yoyo: true,
+            repeat: 1
+        });
+    };
+
+    // 5. Connect all range sliders to the Update Engine
+    const allSliders = document.querySelectorAll('input[type="range"]');
+    allSliders.forEach(input => {
+        input.addEventListener('input', window.updateHistogram);
+    });
+
+    // Run once at start to sync initial slider positions
+    window.updateHistogram();
+});
+</script>
 </body>
 </html>

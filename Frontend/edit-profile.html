@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile | CuriosityOS</title>
+    <title>Profile | CuriosityOS</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -60,7 +60,7 @@
     <main class="pt-32 pb-24 px-8 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
         
         <aside class="lg:col-span-3 space-y-2">
-            <a href="#" class="sidebar-link active"><i data-lucide="user" class="w-4 h-4"></i> Public Profile</a>
+            <a href="#" class="sidebar-link active"><i data-lucide="user" class="w-4 h-4"></i> Profile</a>
         </aside>
 
         <div class="lg:col-span-9">
@@ -75,7 +75,7 @@
                         </label>
                     </div>
                     <div class="text-center md:text-left">
-                        <h2 class="text-2xl font-bold" id="header-name">Researcher Name</h2>
+                        <h2 class="text-2xl font-bold" id="header-name"> Name</h2>
                         <p class="text-cyan-400 text-xs font-bold uppercase tracking-widest mt-1" id="header-username">@identity</p>
                     </div>
                 </div>
@@ -155,7 +155,9 @@
             const user = pb.authStore.model;
 
             // Fill fields
-            const fields = ['name', 'username', 'tagline', 'bio', 'github_link', 'linkedin_link'];
+            const fields = ['name', 'username', 'skills', 'tagline', 'bio', 
+            'email', 'dob', 'address', 'institution', 
+            'github_link', 'linkedin_link', 'facebook_link', 'instagram_link'];
             fields.forEach(f => {
                 const el = document.getElementById(f);
                 if (el) el.value = user[f] || "";
@@ -191,7 +193,9 @@
             lucide.createIcons();
 
             const fd = new FormData();
-            const fields = ['name', 'username', 'tagline', 'bio', 'github_link', 'linkedin_link'];
+            const fields = ['name', 'username', 'skills', 'tagline', 'bio', 
+            'email', 'dob', 'address', 'institution', 
+            'github_link', 'linkedin_link', 'facebook_link', 'instagram_link'];
             fields.forEach(f => fd.append(f, document.getElementById(f).value));
 
             const av = document.getElementById('avatar-input').files[0];
