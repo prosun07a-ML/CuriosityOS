@@ -140,14 +140,16 @@
 
 <body class="antialiased selection:bg-cyanGlow selection:text-scienceBlue">
 
-   <!-- 1. CINEMATIC ENTRANCE -->
+    <!-- 1. CINEMATIC ENTRANCE -->
     <div id="intro-overlay">
         <canvas id="intro-canvas"></canvas>
         <div class="intro-content">
-            <h1 id="intro-title" class="font-heading text-5xl md:text-7xl font-bold text-white tracking-tight opacity-0 scale-95 drop-shadow-[0_0_15px_rgba(0,229,255,0.8)]">
+            <h1 id="intro-title"
+                class="font-heading text-5xl md:text-7xl font-bold text-white tracking-tight opacity-0 scale-95 drop-shadow-[0_0_15px_rgba(0,229,255,0.8)]">
                 CuriosityOS
             </h1>
-            <p id="intro-subtitle" class="font-sans text-cyanGlow mt-4 text-lg md:text-xl tracking-widest uppercase opacity-0">
+            <p id="intro-subtitle"
+                class="font-sans text-cyanGlow mt-4 text-lg md:text-xl tracking-widest uppercase opacity-0">
                 Curiosity Driven Learning Platform
             </p>
         </div>
@@ -155,7 +157,7 @@
 
     <!-- Main Background Canvas -->
     <canvas id="bg-canvas"></canvas>
-    
+
     <!-- Navigation -->
     <nav class="fixed w-full z-50 glass-panel border-b-0 border-white/5 transition-all duration-300" id="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -311,54 +313,20 @@
                     <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">The Curiosity Deficit</h2>
                     <div class="w-24 h-1 bg-cyanGlow mx-auto rounded-full"></div>
                 </div>
+                <div class="max-w-3xl mx-auto text-gray-400 text-lg leading-relaxed">
+                    <p>In an era of unprecedented access to information, a paradoxical decline in curiosity has
+                        emerged among students. The "curiosity deficit" is characterized by a decrease in natural
+                        inquiry, question formulation, and exploratory behavior. This phenomenon is attributed to
+                        factors such as over-reliance on technology for answers, standardized testing pressures, and
+                        a shift towards passive learning environments.</p>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Problem -->
-                    <div
-                        class="glass-panel p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 about-card">
-                        <div
-                            class="w-14 h-14 rounded-xl bg-red-500/10 flex items-center justify-center mb-6 border border-red-500/20">
-                            <i data-lucide="alert-circle" class="w-7 h-7 text-red-400"></i>
-                        </div>
-                        <h3 class="font-heading text-2xl font-bold text-white mb-4">Problem</h3>
-                        <p class="text-gray-400 leading-relaxed">
-                            Traditional education suppresses curiosity. Standardized testing and rigid curriculums
-                            prioritize memorization over exploration, leading to disengaged students.
-                        </p>
-                    </div>
+                    <p class="mt-6">CIRL was founded to address this critical gap in education. By understanding the
+                        underlying causes of the curiosity deficit and developing targeted interventions, CIRL aims to
+                        reignite the innate drive to explore and learn in students. Through research, technology, and
+                        community engagement, CIRL seeks to create a future where curiosity is nurtured and celebrated as
+                        a fundamental aspect of education.</p>
 
-                    <!-- Solution -->
-                    <div
-                        class="glass-panel p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 about-card">
-                        <div
-                            class="w-14 h-14 rounded-xl bg-cyanGlow/10 flex items-center justify-center mb-6 border border-cyanGlow/20">
-                            <i data-lucide="lightbulb" class="w-7 h-7 text-cyanGlow"></i>
-                        </div>
-                        <h3 class="font-heading text-2xl font-bold text-white mb-4">Solution</h3>
-                        <p class="text-gray-400 leading-relaxed">
-                            CIRL measures and develops curiosity in students through interactive, inquiry-based
-                            learning environments that adapt to individual interests.
-                        </p>
-                    </div>
-
-                    <!-- Mission -->
-                    <div
-                        class="glass-panel p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 about-card">
-                        <div
-                            class="w-14 h-14 rounded-xl bg-curiosityOrange/10 flex items-center justify-center mb-6 border border-curiosityOrange/20">
-                            <i data-lucide="rocket" class="w-7 h-7 text-curiosityOrange"></i>
-                        </div>
-                        <h3 class="font-heading text-2xl font-bold text-white mb-4">Mission</h3>
-                        <p class="text-gray-400 leading-relaxed">
-                            Build the world's first curiosity-driven learning intelligence system to reshape how
-                            knowledge is acquired and assessed globally.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-
+                </section>
 
 
         <section id="faq" class="relative py-24 z-10">
@@ -880,8 +848,8 @@
                         curiosity-driven learning in students worldwide.
                     </p>
                     <div class="text-sm text-gray-500">
-                        <p class="mb-1"><span class="text-gray-300"></span>Curiosity OS Institute of Research & Learning (CIRL)</p>
-                        <p><span class="text-gray-300">Email:</span> curiosityoscirl@gmail.com</p>
+                        <p class="mb-1"><span class="text-gray-300">Founder:</span>Prosun Kanti Datta</p>
+                        <p><span class="text-gray-300">Email:</span> prosun07a@gmail.com</p>
                         <p><span class="text-gray-300">Contact:</span> 01312646056</p>
                     </div>
                 </div>
@@ -926,7 +894,7 @@
     <!-- Scripts -->
     <script>
         // 1. Create the bridge to the backpack
-        const pb = new PocketBase('http://127.0.0.1:8090');
+        const pb = new PocketBase('https://pocketbase-production-5ec2.up.railway.app');
 
         // 2. This function grabs your numbers from the backpack and shows them
         async function getMyNumbers() {
